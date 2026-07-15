@@ -158,7 +158,7 @@
 
   function renderBarChart(container) {
     var W = 640, H = 380;
-    var margin = { top: 52, right: 70, bottom: 56, left: 60 };
+    var margin = { top: 52, right: 70, bottom: 62, left: 60 };
     var plotW = W - margin.left - margin.right;
     var plotH = H - margin.top - margin.bottom;
     var plotTop = margin.top;
@@ -244,7 +244,7 @@
     var xAxisTitle = svgEl("text", {
       class: "chart-axis-label",
       x: margin.left + plotW / 2,
-      y: plotBottom + 38,
+      y: plotBottom + 46,
       "text-anchor": "middle"
     });
     xAxisTitle.textContent = "Firm tier";

@@ -285,10 +285,25 @@ table.data-table {
 
 .data-table thead th.group-header {
   text-align: center;
+  position: relative;
+  border-bottom: none;
 }
 
-.data-table .col-divider {
-  border-left: 1px solid var(--baseline);
+.data-table thead th.group-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid var(--baseline);
+}
+
+.data-table thead th.group-header--demand::after {
+  right: 14px;
+}
+
+.data-table thead th.group-header--supply::after {
+  left: 14px;
 }
 
 .data-table tbody tr.total-row td {
