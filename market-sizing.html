@@ -17,7 +17,7 @@
         <li><a href="market-sizing.html" aria-current="page">Market Sizing</a></li>
         <li><a href="types-of-ag-finance.html">Types of Ag Finance</a></li>
         <li><a href="capital-providers.html">Capital Providers</a></li>
-        <li><a href="crs-programming-examples.html">CRS Programming Examples</a></li>
+        <li><a href="programming-examples.html">Programming Examples</a></li>
         <li><a href="glossary.html">Glossary</a></li>
       </ul>
     </nav>
@@ -75,7 +75,7 @@
     <p class="illustrative-note">
       The report doesn't break the agri-SME market down by firm size or by
       who is supplying capital. To help make the size and shape of the gap
-      concrete, we built an illustrative segmentation below. It is CRS/Claude
+      concrete, we built an illustrative segmentation below. It is our own
       modeling, not data from the report — treat it as a way to think about
       the market's structure, not a precise measurement.
     </p>
@@ -89,15 +89,18 @@
         </caption>
         <thead>
           <tr>
-            <th scope="col">Tier</th>
-            <th scope="col"># firms</th>
-            <th scope="col">Avg. demand</th>
-            <th scope="col">Total demand</th>
-            <th scope="col">Bank supply</th>
-            <th scope="col">Fund supply</th>
-            <th scope="col">Total supply</th>
-            <th scope="col">Gap</th>
-            <th scope="col">% met</th>
+            <th scope="col" rowspan="2">Tier</th>
+            <th scope="col" rowspan="2"># firms</th>
+            <th scope="col" rowspan="2">Avg. demand</th>
+            <th scope="col" rowspan="2">Total demand</th>
+            <th scope="colgroup" colspan="3" class="supply-group-header">Supply</th>
+            <th scope="col" rowspan="2">Gap</th>
+            <th scope="col" rowspan="2">% met</th>
+          </tr>
+          <tr>
+            <th scope="col">Bank</th>
+            <th scope="col">Fund</th>
+            <th scope="col">Total</th>
           </tr>
         </thead>
         <tbody>
@@ -137,7 +140,7 @@
           <tr class="total-row">
             <td>Total</td>
             <td>130,000</td>
-            <td>—</td>
+            <td>~$680K</td>
             <td>~$88.4B</td>
             <td>$11.0B</td>
             <td>$3.0B</td>
@@ -149,6 +152,9 @@
       </table>
     </div>
 
+    <h3 class="chart-title">Composition of total demand (~$88.4B)</h3>
+    <div id="market-sizing-composition-chart"></div>
+
     <details class="modeling-notes">
       <summary>Modeling notes &amp; assumptions</summary>
       <ul>
@@ -158,8 +164,10 @@
           report's 130,000 agri-SME count.
         </li>
         <li>
-          DFIs excluded as a capital-provider category — they lend to large
-          corporates, not true SMEs.
+          DFIs excluded as a capital-provider category — they primarily lend
+          directly to large corporates rather than SMEs, though they do reach
+          SMEs indirectly through intermediaries (on-lending to local banks
+          and funds) and through guarantees.
         </li>
         <li>
           Value chain/off-taker finance excluded from this segmentation for
@@ -181,7 +189,7 @@
 </main>
 
 <footer class="site-footer">
-  <p>Ag Finance Overview is a CRS resource for staff without a finance background.</p>
+  <p>Ag Finance Overview is a resource for development staff without a finance background.</p>
 </footer>
 
 <script src="assets/js/market-sizing-chart.js"></script>

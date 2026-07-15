@@ -22,6 +22,7 @@
   --series-bank:     #2a78d6; /* slot 1 — blue */
   --series-fund:     #1baf7a; /* slot 2 — aqua */
   --series-gap:      #c3c2b7; /* unmet — neutral, not a data hue */
+  --series-count:    #4a3aa7; /* slot 5 — violet, used for the SME-count line */
 
   /* illustrative-content flag (UI accent, never used as a data series) */
   --illustrative-accent: #eda100;
@@ -47,6 +48,7 @@
     --series-bank:     #3987e5;
     --series-fund:     #199e70;
     --series-gap:      #383835;
+    --series-count:    #9085e9;
 
     --illustrative-accent: #c98500;
     --illustrative-wash:   #2a2412;
@@ -148,7 +150,6 @@ main {
 
 .page-intro {
   color: var(--text-secondary);
-  max-width: 68ch;
   margin: 0 0 1.25rem;
 }
 
@@ -208,7 +209,6 @@ section + section { margin-top: 2.75rem; }
 
 .illustrative-note {
   color: var(--text-secondary);
-  max-width: 68ch;
   margin: 0 0 1.5rem;
 }
 
@@ -282,6 +282,10 @@ table.data-table {
   color: var(--text-secondary);
   font-weight: 600;
   border-bottom: 1px solid var(--baseline);
+}
+
+.data-table thead th.supply-group-header {
+  text-align: center;
 }
 
 .data-table tbody tr.total-row td {
@@ -419,6 +423,32 @@ table.data-table {
   color: var(--text-secondary);
 }
 
+.chart-legend--column {
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.chart-legend--column .chart-legend__item strong {
+  color: var(--text-primary);
+  margin-left: 0.4rem;
+}
+
+.composition-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.composition-row .chart-svg-wrap {
+  flex: 0 1 260px;
+}
+
+.composition-row .chart-legend {
+  margin: 0;
+}
+
 .chart-legend__item {
   display: inline-flex;
   align-items: center;
@@ -431,6 +461,19 @@ table.data-table {
   border-radius: 2px;
   display: inline-block;
   flex: none;
+}
+
+.chart-legend__swatch--line {
+  width: 14px;
+  height: 3px;
+  border-radius: 1.5px;
+}
+
+.chart-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
 }
 
 .chart-tooltip {
