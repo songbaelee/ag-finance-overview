@@ -287,6 +287,10 @@ table.data-table {
   text-align: center;
 }
 
+.data-table .col-divider {
+  border-left: 1px solid var(--baseline);
+}
+
 .data-table tbody tr.total-row td {
   font-weight: 700;
   border-top: 2px solid var(--baseline);
