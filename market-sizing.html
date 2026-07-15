@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market Sizing — Ag Finance Overview</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-title" href="index.html">Ag Finance Overview</a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="market-sizing.html" aria-current="page">Market Sizing</a></li>
+        <li><a href="types-of-ag-finance.html">Types of Ag Finance</a></li>
+        <li><a href="capital-providers.html">Capital Providers</a></li>
+        <li><a href="crs-programming-examples.html">CRS Programming Examples</a></li>
+        <li><a href="glossary.html">Glossary</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Market Sizing</h1>
+  <p class="page-intro">
+    How big is the agri-SME financing gap in Sub-Saharan Africa, and who is
+    currently meeting it? The figures below come from a 2022 sector study;
+    below that, we've built a simple illustrative breakdown to make the
+    shape of the gap easier to picture.
+  </p>
+
+  <p class="source-line">
+    Source: CASA / ISF Advisors, <em>“State of the Agri-SME Sector: Bridging the
+    Finance Gap”</em> (2022).
+    <a href="https://www.casaprogramme.com/wp-content/uploads/2022/03/the-state-of-the-agri-sme-sector-bridging-the-finance-gap.pdf" target="_blank" rel="noopener">
+      Read the full report (PDF)
+    </a>
+  </p>
+
+  <section class="section-report">
+    <h2 class="section-heading">What the report tells us</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-value">~130,000</span>
+        <span class="stat-label">Agri-SMEs in Sub-Saharan Africa</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">~$88.1B</span>
+        <span class="stat-label">Total financing demand</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">$74B</span>
+        <span class="stat-label">Annual financing gap</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">~$14B</span>
+        <span class="stat-label">Formal supply currently met</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">~16%</span>
+        <span class="stat-label">Share of demand met</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-illustrative">
+    <h2 class="section-heading">
+      Our illustrative modeling
+      <span class="badge-illustrative">Illustrative</span>
+    </h2>
+    <p class="illustrative-note">
+      The report doesn't break the agri-SME market down by firm size or by
+      who is supplying capital. To help make the size and shape of the gap
+      concrete, we built an illustrative segmentation below. It is CRS/Claude
+      modeling, not data from the report — treat it as a way to think about
+      the market's structure, not a precise measurement.
+    </p>
+
+    <div id="market-sizing-chart" aria-describedby="market-sizing-table-caption"></div>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <caption id="market-sizing-table-caption">
+          Illustrative segmentation of agri-SME financing demand and supply by tier (US$).
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Tier</th>
+            <th scope="col"># firms</th>
+            <th scope="col">Avg. demand</th>
+            <th scope="col">Total demand</th>
+            <th scope="col">Bank supply</th>
+            <th scope="col">Fund supply</th>
+            <th scope="col">Total supply</th>
+            <th scope="col">Gap</th>
+            <th scope="col">% met</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Small SME</td>
+            <td>78,000</td>
+            <td>$150K</td>
+            <td>$11.7B</td>
+            <td>$0.1B</td>
+            <td>$0.4B</td>
+            <td>$0.5B</td>
+            <td>$11.2B</td>
+            <td>~4%</td>
+          </tr>
+          <tr>
+            <td>Medium SME</td>
+            <td>39,000</td>
+            <td>$500K</td>
+            <td>$19.5B</td>
+            <td>$1.4B</td>
+            <td>$1.6B</td>
+            <td>$3.0B</td>
+            <td>$16.5B</td>
+            <td>~15%</td>
+          </tr>
+          <tr>
+            <td>Upper SME</td>
+            <td>13,000</td>
+            <td>$4.4M</td>
+            <td>$57.2B</td>
+            <td>$9.5B</td>
+            <td>$1.0B</td>
+            <td>$10.5B</td>
+            <td>$46.7B</td>
+            <td>~18%</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total</td>
+            <td>130,000</td>
+            <td>—</td>
+            <td>~$88.4B</td>
+            <td>$11.0B</td>
+            <td>$3.0B</td>
+            <td>$14.0B</td>
+            <td>~$74.4B</td>
+            <td>~16%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details class="modeling-notes">
+      <summary>Modeling notes &amp; assumptions</summary>
+      <ul>
+        <li>
+          No "micro" tier — micro/smallholder firms (~33M informal
+          smallholder farms) are a different population, not part of the
+          report's 130,000 agri-SME count.
+        </li>
+        <li>
+          DFIs excluded as a capital-provider category — they lend to large
+          corporates, not true SMEs.
+        </li>
+        <li>
+          Value chain/off-taker finance excluded from this segmentation for
+          now — kept simple as banks vs. investment funds only.
+        </li>
+        <li>
+          Guarantee-backed lending and government/donor schemes folded into
+          "banks" (treated as a channel, not a distinct capital source).
+        </li>
+        <li>
+          Banks assumed concentrated in the upper SME tier
+          (collateral/track record barriers exclude smaller firms);
+          investment funds assumed capital-constrained overall but reach
+          further down-market proportionally.
+        </li>
+      </ul>
+    </details>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>Ag Finance Overview is a CRS resource for staff without a finance background.</p>
+</footer>
+
+<script src="assets/js/market-sizing-chart.js"></script>
+</body>
+</html>
