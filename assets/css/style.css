@@ -159,7 +159,6 @@ main {
   border-left: 2px solid var(--baseline);
   padding-left: 0.75rem;
   margin: 0 0 2.25rem;
-  max-width: 68ch;
 }
 
 .source-line a { color: var(--text-secondary); }
@@ -346,6 +345,11 @@ table.data-table {
   font-size: 11px;
 }
 
+.chart-axis-label {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 .chart-category-label {
   fill: var(--text-secondary);
   font-family: var(--font-sans);
@@ -437,6 +441,7 @@ table.data-table {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 2rem;
   margin: 1.25rem 0 1.5rem;
 }
@@ -474,6 +479,12 @@ table.data-table {
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 0.75rem;
+}
+
+.section-transition {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0 0 1rem;
 }
 
 .chart-tooltip {

@@ -158,7 +158,7 @@
 
   function renderBarChart(container) {
     var W = 640, H = 380;
-    var margin = { top: 52, right: 54, bottom: 40, left: 44 };
+    var margin = { top: 52, right: 70, bottom: 56, left: 60 };
     var plotW = W - margin.left - margin.right;
     var plotH = H - margin.top - margin.bottom;
     var plotTop = margin.top;
@@ -217,6 +217,38 @@
       label.textContent = t === 0 ? "0" : fmtCountShort(t);
       svg.appendChild(label);
     });
+
+    // axis titles — left/right are rotated to sit in the outer margins;
+    // x-axis title sits centered below the category labels
+    var plotMidY = plotTop + plotH / 2;
+    var leftAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: 14,
+      y: plotMidY,
+      "text-anchor": "middle",
+      transform: "rotate(-90 14 " + plotMidY + ")"
+    });
+    leftAxisTitle.textContent = "Total demand ($)";
+    svg.appendChild(leftAxisTitle);
+
+    var rightAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: W - 14,
+      y: plotMidY,
+      "text-anchor": "middle",
+      transform: "rotate(90 " + (W - 14) + " " + plotMidY + ")"
+    });
+    rightAxisTitle.textContent = "# of SMEs";
+    svg.appendChild(rightAxisTitle);
+
+    var xAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: margin.left + plotW / 2,
+      y: plotBottom + 38,
+      "text-anchor": "middle"
+    });
+    xAxisTitle.textContent = "Firm tier";
+    svg.appendChild(xAxisTitle);
 
     // baseline (redraw over the 0-gridline, slightly darker)
     svg.appendChild(
