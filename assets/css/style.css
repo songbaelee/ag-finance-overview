@@ -283,7 +283,7 @@ table.data-table {
   border-bottom: 1px solid var(--baseline);
 }
 
-.data-table thead th.supply-group-header {
+.data-table thead th.group-header {
   text-align: center;
 }
 
