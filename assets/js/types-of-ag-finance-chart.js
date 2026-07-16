@@ -136,6 +136,33 @@
     }
   };
 
+  // Every color and font-size below is duplicated as an inline fallback
+  // (var(--x, #hex)) so the diagram still renders correctly — colors,
+  // dashed guide lines, readable text sizes — even if style.css fails to
+  // load or apply for some reason. SVG has no fill/stroke by default, and
+  // an undefined var() resolves to nothing (fill defaults to black), so
+  // relying on the stylesheet alone for these is fragile.
+  var VAR_FALLBACK = {
+    "--series-bank": "#2a78d6",
+    "--series-fund": "#1baf7a",
+    "--series-gap": "#c3c2b7",
+    "--series-count": "#4a3aa7",
+    "--series-green": "#008300",
+    "--series-magenta": "#e87ba4",
+    "--series-orange": "#eb6834",
+    "--series-red": "#e34948",
+    "--text-primary": "#0b0b0b",
+    "--text-secondary": "#52514e",
+    "--text-muted": "#898781",
+    "--surface-1": "#fcfcfb"
+  };
+
+  function cssVar(varName) {
+    return "var(" + varName + ", " + VAR_FALLBACK[varName] + ")";
+  }
+
+  var FONT_STACK = "system-ui, -apple-system, \"Segoe UI\", sans-serif";
+
   function svgEl(tag, attrs) {
     var el = document.createElementNS(SVG_NS, tag);
     for (var k in attrs) {
@@ -190,7 +217,7 @@
     row.className = "tt-row";
     var key = document.createElement("span");
     key.className = "tt-key";
-    key.style.background = "var(" + seg.varName + ")";
+    key.style.background = cssVar(seg.varName);
     row.appendChild(key);
     var label = document.createElement("span");
     label.textContent = seg.label;
@@ -207,7 +234,7 @@
 
   function segTextFill(varName, secondary) {
     if (LIGHT_FILL_VARS[varName]) {
-      return secondary ? "var(--text-secondary)" : "var(--text-primary)";
+      return secondary ? cssVar("--text-secondary") : cssVar("--text-primary");
     }
     return secondary ? "rgba(255,255,255,0.85)" : "#ffffff";
   }
@@ -251,21 +278,28 @@
         rows.map(function (r) { return r.def.title; }).join("; ") + "."
     });
 
+    var guideLineStyle = "stroke:" + cssVar("--text-muted") + ";stroke-width:1.25;stroke-dasharray:4 3;fill:none";
+    var guideLabelStyle = "fill:" + cssVar("--text-muted") + ";font-family:" + FONT_STACK + ";font-size:10px;font-weight:600";
+
     svg.appendChild(svgEl("line", {
-      class: "level-guide", x1: demandSupplyX, x2: demandSupplyX, y1: guideTop, y2: guideBottom
+      class: "level-guide", x1: demandSupplyX, x2: demandSupplyX, y1: guideTop, y2: guideBottom,
+      style: guideLineStyle
     }));
     var dsLabel = svgEl("text", {
-      class: "level-guide-label", x: demandSupplyX, y: topPad - 12, "text-anchor": "middle"
+      class: "level-guide-label", x: demandSupplyX, y: topPad - 12, "text-anchor": "middle",
+      style: guideLabelStyle
     });
     dsLabel.textContent = "demand / supply";
     svg.appendChild(dsLabel);
 
     if (opts.showGrantsGuide) {
       svg.appendChild(svgEl("line", {
-        class: "level-guide", x1: grantsX, x2: grantsX, y1: guideTop, y2: guideBottom
+        class: "level-guide", x1: grantsX, x2: grantsX, y1: guideTop, y2: guideBottom,
+        style: guideLineStyle
       }));
       var grLabel = svgEl("text", {
-        class: "level-guide-label", x: grantsX, y: guideBottom + 14, "text-anchor": "middle"
+        class: "level-guide-label", x: grantsX, y: guideBottom + 14, "text-anchor": "middle",
+        style: guideLabelStyle
       });
       grLabel.textContent = "grants / repayable";
       svg.appendChild(grLabel);
@@ -279,7 +313,8 @@
 
       var rowLabel = svgEl("text", {
         class: "level-row-label", x: plotLeft - 14, y: y + rowH / 2,
-        "text-anchor": "end", "dominant-baseline": "middle"
+        "text-anchor": "end", "dominant-baseline": "middle",
+        style: "fill:" + cssVar("--text-secondary") + ";font-family:" + FONT_STACK + ";font-size:12px;font-weight:600"
       });
       rowLabel.textContent = row.def.title;
       svg.appendChild(rowLabel);
@@ -294,20 +329,20 @@
 
         var path = svgEl("path", {
           d: roundedHBarPath(xCursor, y, w, rowH, rL, rR),
-          style: "fill:var(" + seg.varName + ")"
+          style: "fill:" + cssVar(seg.varName)
         });
         svg.appendChild(path);
 
         if (w > 78) {
           var lbl = svgEl("text", {
             class: "level-seg-label", x: xCursor + w / 2, y: y + rowH / 2 - 4, "text-anchor": "middle",
-            style: "fill:" + segTextFill(seg.varName, false)
+            style: "fill:" + segTextFill(seg.varName, false) + ";font-family:" + FONT_STACK + ";font-size:11px"
           });
           lbl.textContent = seg.label;
           svg.appendChild(lbl);
           var pct = svgEl("text", {
             class: "level-seg-pct", x: xCursor + w / 2, y: y + rowH / 2 + 10, "text-anchor": "middle",
-            style: "fill:" + segTextFill(seg.varName, true)
+            style: "fill:" + segTextFill(seg.varName, true) + ";font-family:" + FONT_STACK + ";font-size:10px"
           });
           pct.textContent = Math.round(seg.value) + "%";
           svg.appendChild(pct);
@@ -315,6 +350,7 @@
 
         var hit = svgEl("rect", {
           class: "level-seg-hit", x: xCursor, y: y, width: w, height: rowH,
+          style: "fill:transparent;cursor:pointer",
           tabindex: "0", role: "button",
           "aria-label": row.def.title + ": " + seg.label + ", " + Math.round(seg.value) + "% of the total gap"
         });
@@ -345,7 +381,7 @@
           if (sep > 0) {
             svg.appendChild(svgEl("rect", {
               x: xCursor + w - sep / 2, y: y, width: sep, height: rowH,
-              style: "fill:var(--surface-1)"
+              style: "fill:" + cssVar("--surface-1")
             }));
           }
         }
