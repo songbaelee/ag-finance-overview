@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Types of Ag Finance — Ag Finance Overview</title>
+<title>Closing the Gap — Ag Finance Overview</title>
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="market-sizing.html">Market Sizing</a></li>
-        <li><a href="types-of-ag-finance.html" aria-current="page">Types of Ag Finance</a></li>
+        <li><a href="types-of-ag-finance.html" aria-current="page">Closing the Gap</a></li>
         <li><a href="capital-providers.html">Capital Providers</a></li>
         <li><a href="programming-examples.html">Programming Examples</a></li>
         <li><a href="glossary.html">Glossary</a></li>
@@ -25,19 +25,267 @@
 </header>
 
 <main>
-  <h1 class="page-title">Types of Ag Finance</h1>
+  <h1 class="page-title">Closing the Gap</h1>
   <p class="page-intro">
-    An overview of the main financing instruments used across agricultural
-    value chains — from working capital to asset finance to value-chain
-    credit.
+    We've looked at how big the agri-SME financing gap is. Now we turn to a
+    different question: how might that gap actually get filled? This page
+    builds an illustrative framework — layered, adjustable segmentations —
+    to show why different interventions exist, who they're for, and why
+    some tensions in this space keep recurring.
   </p>
 
-  <p class="placeholder-note">Content for this section is coming soon.</p>
+  <p class="source-line">
+    Builds on the $74B financing gap figure from CASA / ISF Advisors,
+    <em>“State of the Agri-SME Sector: Bridging the Finance Gap”</em> (2022) —
+    see <a href="market-sizing.html">Market Sizing</a> for the report figures
+    themselves. Everything on this page is our own illustrative modeling on
+    top of that figure, not additional data from the report.
+  </p>
+
+  <section class="section-illustrative">
+    <h2 class="section-heading">
+      Our illustrative modeling
+      <span class="badge-illustrative">Illustrative</span>
+    </h2>
+    <p class="illustrative-note">
+      As with market sizing, this isn't an attempt to be precise. It's an
+      attempt to show that segmenting the <em>response</em> to the gap — not
+      just the gap itself — helps clarify why different interventions exist.
+      The proportions below are illustrative, not measured, and you'll be
+      able to adjust some of them yourself. The default view is the main
+      event; the sliders are an "explore further" layer on top of it.
+    </p>
+
+    <h3 class="chart-title">Demand side vs. supply side</h3>
+    <p>
+      The most basic split: is the constraint on the firm's side, or the
+      capital provider's side?
+    </p>
+    <p>
+      Reports on this gap differ in emphasis. Much of the literature leans
+      toward supply-side constraints — banks and capital providers
+      under-serving this market — as the larger issue. Some reports frame it
+      as demand-side — firms lacking the systems, records, or scale to be
+      financeable in the first place. Many reports simply name both without
+      indicating which is larger.
+    </p>
+    <p>
+      For this illustrative view, we've chosen to weight the split toward
+      the demand side — reflecting a view that firm-readiness is the more
+      fundamental constraint — but this is one interpretation among several,
+      and you can adjust the split yourself below.
+    </p>
+
+    <div class="tacg-controls" id="tacg-controls-demand-supply"></div>
+    <div id="tacg-diagram-0" aria-label="Demand versus supply split"></div>
+
+    <h3 class="chart-title">Three lenses, one gap</h3>
+    <p>
+      Demand/supply is one way to cut the $74B. Two more, applied at the same
+      time rather than sequentially:
+    </p>
+    <ul>
+      <li>
+        <strong>Addressable vs. not addressable</strong> — is this portion of
+        the gap something any known tool can currently fix?
+      </li>
+      <li>
+        <strong>Grants vs. repayable capital</strong> — does closing this
+        portion require giving money away, or can it be lent or invested?
+      </li>
+    </ul>
+    <p>
+      None of these three lenses is more "correct" than the others — they're
+      independent views of the same whole, and we're layering all three onto
+      the same illustrative bar.
+    </p>
+
+    <div class="tacg-controls" id="tacg-controls-addressable"></div>
+    <div id="tacg-diagram-1" aria-label="Demand and supply broken down by addressability, temporary/permanent need, and grants versus repayable capital"></div>
+
+    <h3 class="chart-title">Why "addressable" isn't one thing</h3>
+    <p>
+      Within the addressable portion, we see a pattern that isn't a simple
+      binary — it's temporary, then permanent, then temporary again:
+    </p>
+    <ul>
+      <li>
+        <strong>Temporary (demand side):</strong> this is technical
+        assistance. Once TA makes a firm stronger — better records, stronger
+        management — that firm shouldn't need TA anymore. Temporary, from
+        the perspective of any one firm.
+      </li>
+      <li>
+        <strong>Permanent (supply side):</strong> most supply-side
+        interventions. These segments have a structural, ongoing need for
+        support — not a phase they graduate out of.
+      </li>
+      <li>
+        <strong>Temporary again (supply side):</strong> a narrower slice of
+        firms that graduate off supply-side subsidy for a different reason
+        than TA firms do — for example, firms that are already commercially
+        viable but a lender misjudges the risk. Once that perception (or
+        whatever the specific barrier is) corrects, this segment can
+        graduate to ordinary commercial terms too.
+      </li>
+    </ul>
+
+    <div class="callout-note">
+      <p>
+        Worth noting: technical assistance is often thought of as a
+        permanent subsidy, because it's always funded by grants, year after
+        year, program after program. But that permanence is at the program
+        level. From an individual firm's perspective, TA is meant to be
+        temporary — support that ends once the firm no longer needs it.
+      </p>
+    </div>
+
+    <h3 class="chart-title">Grants vs. repayable capital, mapped on</h3>
+    <p>
+      Grants fund the not-addressable segment, the first temporary (TA)
+      segment, and part of the permanent segment. Repayable capital funds
+      the rest of permanent, plus the second temporary segment.
+    </p>
+
+    <div id="tacg-diagram-2" aria-label="Grants versus repayable capital mapped onto the demand, supply, addressability, and temporary/permanent breakdown, with the grants/repayable boundary marked"></div>
+
+    <div class="callout-opinion">
+      <span class="callout-opinion__label">A personal view</span>
+      <p>
+        A tension worth naming: in my view, some of what gets labeled
+        "repayable capital" in the permanent segment is actually acting as
+        disguised permanent subsidy. The segment can't generate returns
+        attractive enough to be commercially scalable — so the fund is only
+        investable by concessional investors, a small and limited pool. I
+        don't think that's a problem in itself — it's fine, even good, for
+        concessional investors to fund a fund serving a niche market. The
+        real issue is when everyone involved — the fund, its backers, its
+        critics — expects that fund to eventually scale commercially.
+        Donors then criticize the fund for failing to scale, without
+        recognizing that its return profile was never going to attract
+        mainstream capital in the first place.
+      </p>
+    </div>
+
+    <h3 class="chart-title">Within grants: TA, incentives, first-loss</h3>
+    <ul>
+      <li><strong>TA</strong> — the demand-side mechanism, covered above.</li>
+      <li>
+        <strong>Incentives</strong> — a smaller, supply-side slice of grant
+        funding: pay-for-performance schemes, results-based grants to
+        lenders.
+      </li>
+      <li>
+        <strong>First-loss</strong> — the junior tranche of a capital
+        structure, which absorbs losses before senior capital does, earning
+        a lower return even though it carries more risk. We group
+        first-loss with repayable capital because, unlike a grant, it's
+        still capital that's invested and expects some return — just a
+        subordinated one.
+      </li>
+    </ul>
+
+    <div id="tacg-diagram-3" aria-label="Grants broken down into TA, incentives, and first-loss, alongside the full breakdown so far"></div>
+
+    <div class="callout-opinion">
+      <span class="callout-opinion__label">A personal view</span>
+      <p>
+        Another tension worth naming: supply-side interventions — new
+        products, first-loss capital, incentive schemes — should, in
+        principle, only be built for firms that are already
+        investment-ready. In my experience, donors often build supply-side
+        programs for firms that aren't investment-ready yet, essentially
+        trying to use a supply-side tool to solve what's actually a
+        demand-side problem.
+      </p>
+    </div>
+
+    <h3 class="chart-title">Within TA: farmer level vs. firm level</h3>
+    <p>Technical assistance itself splits by who receives it:</p>
+    <ul>
+      <li>
+        <strong>Farmer level</strong> — agricultural extension: direct
+        advisory to farmers on practices, inputs, yields.
+      </li>
+      <li>
+        <strong>Firm level</strong> — Business Development Services (BDS)
+        and investment readiness: advisory aimed at the enterprise itself —
+        financial management, business planning, growth strategy.
+      </li>
+    </ul>
+
+    <div id="tacg-diagram-4" aria-label="TA broken down into farmer level and firm level, alongside the full breakdown so far"></div>
+
+    <h3 class="chart-title">Within firm-level TA: BDS vs. investment readiness</h3>
+    <ul>
+      <li>
+        <strong>Business Development Services (BDS):</strong> non-financial
+        support to help SMEs overcome obstacles and grow — coaching,
+        consulting, business planning, financial management training.
+      </li>
+      <li>
+        <strong>Investment readiness:</strong> a narrower, later-stage form
+        of support aimed at preparing a specific firm for a specific capital
+        raise — business plans, due-diligence prep, investor matching.
+      </li>
+    </ul>
+
+    <div id="tacg-diagram-5" aria-label="Firm-level TA broken down into BDS and investment readiness — the full seven-level breakdown"></div>
+
+    <details class="modeling-notes">
+      <summary>Terminology &amp; modeling notes</summary>
+      <ul>
+        <li>
+          "Business Development Services (BDS)" is the formal term for
+          firm-level TA — not "capacity building" or "agricultural
+          extension." Agricultural extension refers specifically to
+          farmer-level advisory (crop practices, inputs) — CRS's direct
+          wheelhouse, and a historically distinct tradition from BDS. CRS
+          does capacity building/extension at the farmer level; it does not
+          do investment readiness, and partners with other BDS providers for
+          firm-level work.
+        </li>
+        <li>
+          "Enabling environment" — policy, regulation, credit
+          infrastructure, credit bureaus, collateral registries — supports
+          both the demand and supply sides at once and isn't captured in
+          this simplified split. Out of scope for this illustrative view.
+        </li>
+        <li>
+          Only the top two levels (demand/supply; addressable/not
+          addressable) are adjustable above. Everything below — the
+          temporary-again share of supply, the grant share of the permanent
+          segment, and the farmer/firm and BDS/investment-readiness splits —
+          uses fixed illustrative proportions, chosen to be clean and
+          plausible rather than measured.
+        </li>
+      </ul>
+    </details>
+
+    <h3 class="chart-title">Putting it all together</h3>
+    <p class="section-transition">
+      The full picture, once every layer above is combined into one
+      illustrative bar.
+    </p>
+    <div id="tacg-diagram-recap" class="level-diagram--recap" aria-label="Recap: the full seven-level breakdown of the agri-SME financing gap"></div>
+  </section>
+
+  <section class="further-reading">
+    <h2>Further reading</h2>
+    <p>
+      ISF Advisors — <em>“Understanding How Agri-SMEs are Financed
+      Today.”</em> One example — not a comprehensive list — of an
+      alternative way to frame this space: a three-level framework spanning
+      capital, coordination, and policy, offered here as a point of
+      comparison to the simpler demand/supply spine used on this page.
+    </p>
+  </section>
 </main>
 
 <footer class="site-footer">
   <p>Ag Finance Overview is a resource for development staff without a finance background.</p>
 </footer>
 
+<script src="assets/js/types-of-ag-finance-chart.js"></script>
 </body>
 </html>

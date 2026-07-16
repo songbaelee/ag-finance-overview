@@ -23,10 +23,19 @@
   --series-fund:     #1baf7a; /* slot 2 — aqua */
   --series-gap:      #c3c2b7; /* unmet — neutral, not a data hue */
   --series-count:    #4a3aa7; /* slot 5 — violet, used for the SME-count line */
+  --series-green:    #008300; /* slot — green, Closing the Gap diagram */
+  --series-magenta:  #e87ba4; /* slot — magenta, Closing the Gap diagram */
+  --series-orange:   #eb6834; /* slot — orange, Closing the Gap diagram */
+  --series-red:      #e34948; /* slot — red, Closing the Gap diagram */
 
   /* illustrative-content flag (UI accent, never used as a data series) */
   --illustrative-accent: #eda100;
   --illustrative-wash:   #fdf6e4;
+
+  /* personal-opinion flag (first-person callouts — distinct from the
+     illustrative flag above; never used as a data series either) */
+  --opinion-accent: #4a3aa7;
+  --opinion-wash:   #f1eefb;
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -49,9 +58,16 @@
     --series-fund:     #199e70;
     --series-gap:      #383835;
     --series-count:    #9085e9;
+    --series-green:    #008300;
+    --series-magenta:  #d55181;
+    --series-orange:   #d95926;
+    --series-red:      #e66767;
 
     --illustrative-accent: #c98500;
     --illustrative-wash:   #2a2412;
+
+    --opinion-accent: #9085e9;
+    --opinion-wash:   #1e1a2e;
   }
 }
 
@@ -533,6 +549,172 @@ table.data-table {
   border-radius: var(--radius-md);
   padding: 1.5rem;
   color: var(--text-secondary);
+}
+
+/* ---------- callouts ---------- */
+
+/* Neutral / explanatory aside — not a critique, no attribution needed. */
+.callout-note {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--baseline);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.callout-note p { margin: 0; }
+.callout-note p + p { margin-top: 0.75rem; }
+
+/* Personal, first-person opinion — must read as one person's view, never
+   attributed to CRS or any employer. Visually distinct from both the
+   neutral callout above and the illustrative-modeling wash it may sit
+   inside, so the "this is not an institutional claim" distinction is
+   never in doubt. */
+.callout-opinion {
+  margin: 1.5rem 0;
+  padding: 1.1rem 1.25rem;
+  background: var(--opinion-wash);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--opinion-accent);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+}
+
+.callout-opinion__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--opinion-accent) 25%, transparent);
+  border: 1px solid var(--opinion-accent);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.callout-opinion p { margin: 0; font-size: 0.95rem; }
+.callout-opinion p + p { margin-top: 0.75rem; }
+
+/* ---------- level / stacked-bar diagrams (Closing the Gap) ---------- */
+
+.level-diagram {
+  position: relative;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.level-diagram--recap {
+  margin-top: 1.75rem;
+}
+
+.level-diagram .chart-svg-wrap {
+  width: 100%;
+}
+
+.level-row-label {
+  fill: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.level-seg-label {
+  fill: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 11px;
+}
+
+.level-seg-pct {
+  fill: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 10px;
+}
+
+.level-guide {
+  stroke: var(--text-muted);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 3;
+}
+
+.level-guide-label {
+  fill: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.level-seg-hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.level-seg-hit:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 1px;
+}
+
+/* ---------- sliders (session-only "explore further" controls) ---------- */
+
+.tacg-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.tacg-slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tacg-slider-row__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.tacg-slider-row__head strong {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.tacg-slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--series-bank);
+}
+
+/* ---------- further reading ---------- */
+
+.further-reading {
+  margin-top: 2.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.further-reading h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+}
+
+.further-reading p {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  margin: 0;
 }
 
 /* ---------- footer ---------- */
