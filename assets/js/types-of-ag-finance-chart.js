@@ -86,7 +86,7 @@
           { label: "Not addressable", value: d.notAddressable, varName: "--series-gap" },
           { label: "Temporary (TA)", value: d.ta, varName: "--series-bank" },
           { label: "Permanent", value: d.permanent, varName: "--series-fund" },
-          { label: "Temporary again", value: d.tempAgain, varName: "--series-count" }
+          { label: "Temporary again", value: d.tempAgain, varName: "--series-fund-dark" }
         ]
       };
     },
@@ -113,11 +113,11 @@
       return {
         title: "Within TA: farmer level vs. firm level",
         segs: [
-          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap" },
+          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap", muted: true },
           { label: "Farmer level", value: d.farmer, varName: "--series-bank" },
           { label: "Firm level", value: d.firm, varName: "--series-red" },
-          { label: "Incentives", value: d.incentives, varName: "--series-magenta" },
-          { label: "First-loss", value: d.firstLoss, varName: "--series-green" }
+          { label: "Incentives", value: d.incentives, varName: "--series-magenta", muted: true },
+          { label: "First-loss", value: d.firstLoss, varName: "--series-green", muted: true }
         ]
       };
     },
@@ -125,12 +125,12 @@
       return {
         title: "Within firm level: BDS vs. investment readiness",
         segs: [
-          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap" },
-          { label: "Farmer level", value: d.farmer, varName: "--series-bank" },
+          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap", muted: true },
+          { label: "Farmer level", value: d.farmer, varName: "--series-bank", muted: true },
           { label: "BDS", value: d.bds, varName: "--series-red" },
           { label: "Investment readiness", value: d.investmentReadiness, varName: "--series-count" },
-          { label: "Incentives", value: d.incentives, varName: "--series-magenta" },
-          { label: "First-loss", value: d.firstLoss, varName: "--series-green" }
+          { label: "Incentives", value: d.incentives, varName: "--series-magenta", muted: true },
+          { label: "First-loss", value: d.firstLoss, varName: "--series-green", muted: true }
         ]
       };
     }
@@ -145,6 +145,7 @@
   var VAR_FALLBACK = {
     "--series-bank": "#2a78d6",
     "--series-fund": "#1baf7a",
+    "--series-fund-dark": "#0f7a54",
     "--series-gap": "#c3c2b7",
     "--series-count": "#4a3aa7",
     "--series-green": "#008300",
@@ -206,7 +207,7 @@
     return tip;
   }
 
-  function fillSegTooltip(tip, rowTitle, seg) {
+  function fillSegTooltip(tip, rowTitle, seg, fillVarName) {
     tip.textContent = "";
     var title = document.createElement("div");
     title.className = "tt-title";
@@ -217,10 +218,10 @@
     row.className = "tt-row";
     var key = document.createElement("span");
     key.className = "tt-key";
-    key.style.background = cssVar(seg.varName);
+    key.style.background = cssVar(fillVarName || seg.varName);
     row.appendChild(key);
     var label = document.createElement("span");
-    label.textContent = seg.label;
+    label.textContent = seg.label + (seg.muted ? " (not broken out at this level)" : "");
     row.appendChild(label);
     var val = document.createElement("strong");
     val.textContent = Math.round(seg.value) + "% of gap";
@@ -323,14 +324,19 @@
         var w = Math.max((seg.value / 100) * plotWidth, 0.01);
         var isFirst = si === 0, isLast = si === segs.length - 1;
         var rL = isFirst ? 4 : 0, rR = isLast ? 4 : 0;
+        // Muted segments are context from a different scope than what this
+        // row subdivides (e.g. the supply side, on a row that only breaks
+        // down TA) -- rendered as neutral grey with no label, so they read
+        // as inactive backdrop rather than an actual further split.
+        var fillVarName = seg.muted ? "--series-gap" : seg.varName;
 
         var path = svgEl("path", {
           d: roundedHBarPath(xCursor, y, w, rowH, rL, rR),
-          style: "fill:" + cssVar(seg.varName)
+          style: "fill:" + cssVar(fillVarName)
         });
         svg.appendChild(path);
 
-        if (w > 78) {
+        if (!seg.muted && w > 78) {
           var lbl = svgEl("text", {
             class: "level-seg-label", x: xCursor + w / 2, y: y + rowH / 2 - 4, "text-anchor": "middle",
             style: "fill:" + segTextFill(seg.varName, false) + ";font-family:" + FONT_STACK + ";font-size:11px"
@@ -349,11 +355,12 @@
           class: "level-seg-hit", x: xCursor, y: y, width: w, height: rowH,
           style: "fill:transparent;cursor:pointer",
           tabindex: "0", role: "button",
-          "aria-label": row.def.title + ": " + seg.label + ", " + Math.round(seg.value) + "% of the total gap"
+          "aria-label": row.def.title + ": " + seg.label + ", " + Math.round(seg.value) + "% of the total gap" +
+            (seg.muted ? " (not broken out at this level)" : "")
         });
 
         function show(evt) {
-          fillSegTooltip(tip, row.def.title, seg);
+          fillSegTooltip(tip, row.def.title, seg, fillVarName);
           tip.classList.add("is-visible");
           if (evt && evt.clientX !== undefined) positionTooltip(tip, container, evt);
         }
@@ -455,16 +462,19 @@
     if (ctrlAddressable) {
       buildSliderRow(
         ctrlAddressable, "tacg-slider-notaddr", "Not-addressable share of the demand side",
-        0, 50, state.notAddressablePct,
+        0, 95, state.notAddressablePct,
         function (v) { return v + "% of demand side"; },
         function (v) { state.notAddressablePct = v; }
       );
     }
 
     register("tacg-diagram-0", ["level0"]);
-    register("tacg-diagram-1", ["level0", "level1", "level2", "level3"], { showGrantsGuide: true });
-    register("tacg-diagram-3", ["level0", "level1", "level2", "level3", "level4"], { showGrantsGuide: true });
-    register("tacg-diagram-4", ["level0", "level1", "level2", "level3", "level4", "level5"], { showGrantsGuide: true });
+    register("tacg-diagram-1", ["level1"], { showGrantsGuide: true });
+    register("tacg-diagram-2", ["level2"], { showGrantsGuide: true });
+    register("tacg-diagram-3", ["level3"], { showGrantsGuide: true });
+    register("tacg-diagram-4", ["level4"], { showGrantsGuide: true });
+    register("tacg-diagram-5", ["level5"], { showGrantsGuide: true });
+    register("tacg-diagram-6", ["level6"], { showGrantsGuide: true });
     register("tacg-diagram-recap", ["level0", "level1", "level2", "level3", "level4", "level5", "level6"], { showGrantsGuide: true });
 
     rerenderAll();
