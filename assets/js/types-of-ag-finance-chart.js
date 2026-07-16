@@ -1,14 +1,13 @@
 /* "Closing the Gap" — a single stacked horizontal-bar diagram of the
    illustrative demand/supply -> addressable -> temporary/permanent ->
    grants/repayable -> TA -> farmer/firm -> BDS/investment-readiness tree.
-   There is exactly one diagram DOM node for the whole page: as the reader
-   scrolls past each section, an IntersectionObserver relocates that same
-   node to sit right after the section just read and appends a new row to
-   it -- never a new instance, never redrawn from scratch as "new
-   content," just extended. By the last section it holds all 7 rows and
-   doubles as the recap. Two top-level sliders (demand/supply share;
-   not-addressable share of demand) recompute every currently-shown row
-   from shared, session-only state — no persistence, no backend. */
+   There is exactly one diagram DOM node for the whole page, mounted once
+   near the top and never relocated. Each of the 7 sections has its own
+   click-to-toggle button; toggling a level on/off adds or removes that
+   row from the diagram (rows always render in level0..level6 order
+   regardless of toggle order). Two top-level sliders (demand/supply
+   share; not-addressable share of demand) recompute every currently-shown
+   row from shared, session-only state — no persistence, no backend. */
 (function () {
   "use strict";
 
@@ -48,8 +47,13 @@
     var incentives = grantPortion;
     var firstLoss = repayable;
 
-    var farmer = ta * FARMER_PCT_OF_TA / 100;
-    var firm = ta - farmer;
+    // Farmer/firm (and, cascading from firm, BDS/investment-readiness)
+    // are sized off the *full* demand share, not just the addressable-only
+    // "ta" subset -- this makes them fill exactly the same width "TA"
+    // already occupies in the row above (which also spans the full demand
+    // share), with no left-over not-addressable gap inside that span.
+    var farmer = demand * FARMER_PCT_OF_TA / 100;
+    var firm = demand - farmer;
 
     var bds = firm * BDS_PCT_OF_FIRM / 100;
     var investmentReadiness = firm - bds;
@@ -64,6 +68,8 @@
       bds: bds, investmentReadiness: investmentReadiness
     };
   }
+
+  var ALL_LEVELS = ["level0", "level1", "level2", "level3", "level4", "level5", "level6"];
 
   var ROWBUILDERS = {
     level0: function (d) {
@@ -118,7 +124,6 @@
       return {
         title: "Within TA: farmer level vs. firm level",
         segs: [
-          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap", muted: true },
           { label: "Farmer level", value: d.farmer, varName: "--series-bank" },
           { label: "Firm level", value: d.firm, varName: "--series-red" },
           { label: "Incentives", value: d.incentives, varName: "--series-magenta", muted: true },
@@ -130,7 +135,6 @@
       return {
         title: "Within firm level: BDS vs. investment readiness",
         segs: [
-          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap", muted: true },
           { label: "Farmer level", value: d.farmer, varName: "--series-bank", muted: true },
           { label: "BDS", value: d.bds, varName: "--series-red" },
           { label: "Investment readiness", value: d.investmentReadiness, varName: "--series-count" },
@@ -254,6 +258,16 @@
 
   function renderLevelDiagram(container, levelKeys, opts) {
     opts = opts || {};
+    container.innerHTML = "";
+
+    if (levelKeys.length === 0) {
+      var empty = document.createElement("p");
+      empty.className = "level-diagram-empty";
+      empty.textContent = "No levels selected — use the toggles above to add rows to the diagram.";
+      container.appendChild(empty);
+      return;
+    }
+
     var d = compute();
     var rows = levelKeys.map(function (key) {
       return { key: key, def: ROWBUILDERS[key](d) };
@@ -310,7 +324,6 @@
       svg.appendChild(grLabel);
     }
 
-    container.innerHTML = "";
     var tip = buildTooltip(container);
 
     rows.forEach(function (row, i) {
@@ -429,27 +442,31 @@
     container.insertBefore(svgWrap, tip);
   }
 
-  // Single-diagram state: one DOM node for the entire feature. It gets
-  // relocated (not recreated) to sit right after whichever section anchor
-  // most recently scrolled into view, and its levelKeys array only ever
-  // grows -- rows are never removed once added.
+  // Single-diagram state: one DOM node, mounted once, never relocated.
+  // activeLevels is unordered (toggle order); rows always render in
+  // level0..level6 order regardless of which order they were toggled on.
   var diagram = {
     container: null,
-    levelKeys: []
+    activeLevels: ["level0"]
   };
+
+  function sortedActiveLevels() {
+    return ALL_LEVELS.filter(function (lvl) {
+      return diagram.activeLevels.indexOf(lvl) !== -1;
+    });
+  }
 
   function rerenderDiagram() {
     if (!diagram.container) return;
-    var opts = diagram.levelKeys.length > 1 ? { showGrantsGuide: true } : {};
-    renderLevelDiagram(diagram.container, diagram.levelKeys, opts);
+    var levels = sortedActiveLevels();
+    var opts = levels.length > 1 ? { showGrantsGuide: true } : {};
+    renderLevelDiagram(diagram.container, levels, opts);
   }
 
-  function appendLevel(levelKey, anchorEl) {
-    if (diagram.levelKeys.indexOf(levelKey) !== -1) return;
-    diagram.levelKeys.push(levelKey);
-    if (anchorEl && anchorEl.parentNode) {
-      anchorEl.parentNode.insertBefore(diagram.container, anchorEl.nextSibling);
-    }
+  function setLevelActive(levelKey, active) {
+    var idx = diagram.activeLevels.indexOf(levelKey);
+    if (active && idx === -1) diagram.activeLevels.push(levelKey);
+    if (!active && idx !== -1) diagram.activeLevels.splice(idx, 1);
     rerenderDiagram();
   }
 
@@ -484,6 +501,11 @@
     parent.appendChild(row);
   }
 
+  function setToggleUI(btn, active) {
+    btn.setAttribute("aria-pressed", active ? "true" : "false");
+    btn.textContent = active ? "Hide from diagram" : "Show in diagram";
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     var ctrlDemandSupply = document.getElementById("tacg-controls-demand-supply");
     if (ctrlDemandSupply) {
@@ -505,47 +527,27 @@
       );
     }
 
-    // One diagram DOM node for the whole page. Anchors are zero-height
-    // markers, one per section, positioned where that section's row
-    // should appear. The node itself gets created once, placed after
-    // anchor 0 with row0 already rendered, then relocated + extended as
-    // each later anchor scrolls into view -- never recreated.
-    var anchors = Array.prototype.slice.call(document.querySelectorAll(".tacg-anchor"));
-    if (anchors.length === 0) return;
-
-    anchors.sort(function (a, b) {
-      return Number(a.getAttribute("data-level")) - Number(b.getAttribute("data-level"));
-    });
-
-    diagram.container = document.createElement("div");
-    diagram.container.className = "chart-card level-diagram";
-
-    var anchor0 = anchors[0];
-    anchor0.parentNode.insertBefore(diagram.container, anchor0.nextSibling);
-    diagram.levelKeys = ["level0"];
-    rerenderDiagram();
-
-    var laterAnchors = anchors.slice(1);
-    if (laterAnchors.length === 0) return;
-
-    if ("IntersectionObserver" in window) {
-      var observer = new IntersectionObserver(function (entries) {
-        var visible = entries.filter(function (entry) { return entry.isIntersecting; });
-        visible.sort(function (a, b) {
-          return Number(a.target.getAttribute("data-level")) - Number(b.target.getAttribute("data-level"));
-        });
-        visible.forEach(function (entry) {
-          appendLevel("level" + entry.target.getAttribute("data-level"), entry.target);
-          observer.unobserve(entry.target);
-        });
-      });
-      laterAnchors.forEach(function (a) { observer.observe(a); });
-    } else {
-      // No IntersectionObserver support -- just add every remaining row
-      // immediately so the page still works, just without the reveal.
-      laterAnchors.forEach(function (a) {
-        appendLevel("level" + a.getAttribute("data-level"), a);
-      });
+    // One diagram DOM node, mounted once in a fixed spot near the top of
+    // the page -- never relocated, never recreated. Each section's toggle
+    // button just adds/removes that level from activeLevels and
+    // re-renders the same node.
+    var mount = document.getElementById("tacg-diagram");
+    if (mount) {
+      mount.classList.add("chart-card", "level-diagram");
+      diagram.container = mount;
+      rerenderDiagram();
     }
+
+    var toggles = Array.prototype.slice.call(document.querySelectorAll(".tacg-toggle"));
+    toggles.forEach(function (btn) {
+      var levelKey = "level" + btn.getAttribute("data-level");
+      var active = diagram.activeLevels.indexOf(levelKey) !== -1;
+      setToggleUI(btn, active);
+      btn.addEventListener("click", function () {
+        var isActive = btn.getAttribute("aria-pressed") === "true";
+        setToggleUI(btn, !isActive);
+        setLevelActive(levelKey, !isActive);
+      });
+    });
   });
 })();

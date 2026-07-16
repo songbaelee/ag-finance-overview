@@ -56,7 +56,10 @@
       event; the sliders are an "explore further" layer on top of it.
     </p>
 
-    <h3 class="chart-title">Demand side vs. supply side</h3>
+    <div class="chart-title-row">
+      <h3 class="chart-title">Demand side vs. supply side</h3>
+      <button type="button" class="tacg-toggle" data-level="0"></button>
+    </div>
     <p>
       The most basic split: is the constraint on the firm's side, or the
       capital provider's side?
@@ -77,9 +80,12 @@
     </p>
 
     <div class="tacg-controls" id="tacg-controls-demand-supply"></div>
-    <div class="tacg-anchor" data-level="0"></div>
+    <div id="tacg-diagram" aria-label="Illustrative breakdown of the agri-SME financing gap"></div>
 
-    <h3 class="chart-title">Three lenses, one gap</h3>
+    <div class="chart-title-row">
+      <h3 class="chart-title">Three lenses, one gap</h3>
+      <button type="button" class="tacg-toggle" data-level="1"></button>
+    </div>
     <p>
       Demand/supply is one way to cut the $74B. Two more, applied at the same
       time rather than sequentially:
@@ -101,9 +107,11 @@
     </p>
 
     <div class="tacg-controls" id="tacg-controls-addressable"></div>
-    <div class="tacg-anchor" data-level="1"></div>
 
-    <h3 class="chart-title">Why "addressable" isn't one thing</h3>
+    <div class="chart-title-row">
+      <h3 class="chart-title">Why "addressable" isn't one thing</h3>
+      <button type="button" class="tacg-toggle" data-level="2"></button>
+    </div>
     <p>
       Within the addressable portion, we see a pattern that isn't a simple
       binary — it's temporary, then permanent, then temporary again:
@@ -130,8 +138,6 @@
       </li>
     </ul>
 
-    <div class="tacg-anchor" data-level="2"></div>
-
     <div class="callout-note">
       <p>
         Worth noting: technical assistance is often thought of as a
@@ -142,14 +148,15 @@
       </p>
     </div>
 
-    <h3 class="chart-title">Grants vs. repayable capital, mapped on</h3>
+    <div class="chart-title-row">
+      <h3 class="chart-title">Grants vs. repayable capital, mapped on</h3>
+      <button type="button" class="tacg-toggle" data-level="3"></button>
+    </div>
     <p>
       Grants fund the not-addressable segment, the first temporary (TA)
       segment, and part of the permanent segment. Repayable capital funds
       the rest of permanent, plus the second temporary segment.
     </p>
-
-    <div class="tacg-anchor" data-level="3"></div>
 
     <div class="callout-opinion">
       <span class="callout-opinion__label">A personal view</span>
@@ -169,7 +176,10 @@
       </p>
     </div>
 
-    <h3 class="chart-title">Within grants: TA, incentives, first-loss</h3>
+    <div class="chart-title-row">
+      <h3 class="chart-title">Within grants: TA, incentives, first-loss</h3>
+      <button type="button" class="tacg-toggle" data-level="4"></button>
+    </div>
     <ul>
       <li><strong>TA</strong> — the demand-side mechanism, covered above.</li>
       <li>
@@ -187,8 +197,6 @@
       </li>
     </ul>
 
-    <div class="tacg-anchor" data-level="4"></div>
-
     <div class="callout-opinion">
       <span class="callout-opinion__label">A personal view</span>
       <p>
@@ -202,7 +210,10 @@
       </p>
     </div>
 
-    <h3 class="chart-title">Within TA: farmer level vs. firm level</h3>
+    <div class="chart-title-row">
+      <h3 class="chart-title">Within TA: farmer level vs. firm level</h3>
+      <button type="button" class="tacg-toggle" data-level="5"></button>
+    </div>
     <p>Technical assistance itself splits by who receives it:</p>
     <ul>
       <li>
@@ -217,13 +228,15 @@
     </ul>
 
     <p class="section-transition">
-      Grayed-out segments below aren't being broken down further — they're
-      just neighboring context on the same shared scale, not part of this
-      row's split.
+      Grayed-out segments in the diagram aren't being broken down further —
+      they're just neighboring context on the same shared scale, not part
+      of this row's split.
     </p>
-    <div class="tacg-anchor" data-level="5"></div>
 
-    <h3 class="chart-title">Within firm-level TA: BDS vs. investment readiness</h3>
+    <div class="chart-title-row">
+      <h3 class="chart-title">Within firm-level TA: BDS vs. investment readiness</h3>
+      <button type="button" class="tacg-toggle" data-level="6"></button>
+    </div>
     <ul>
       <li>
         <strong>Business Development Services (BDS):</strong> non-financial
@@ -236,8 +249,6 @@
         raise — business plans, due-diligence prep, investor matching.
       </li>
     </ul>
-
-    <div class="tacg-anchor" data-level="6"></div>
 
     <details class="modeling-notes">
       <summary>Terminology &amp; modeling notes</summary>

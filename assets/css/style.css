@@ -516,6 +516,44 @@ table.data-table {
   margin: 0 0 0.75rem;
 }
 
+.chart-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+}
+
+.chart-title-row .chart-title { margin: 0 0 0.75rem; }
+
+.tacg-toggle {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.tacg-toggle:hover { color: var(--text-primary); }
+
+.tacg-toggle[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--series-bank) 16%, transparent);
+  border-color: var(--series-bank);
+  color: var(--text-primary);
+}
+
+.level-diagram-empty {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-style: italic;
+  margin: 0.5rem 0 0;
+}
+
 .section-transition {
   color: var(--text-secondary);
   font-style: italic;
@@ -607,17 +645,6 @@ table.data-table {
 .level-diagram {
   position: relative;
   margin: 1.5rem 0 1.25rem;
-}
-
-/* Near-zero-height scroll markers — the single growing diagram relocates
-   to sit right after whichever one most recently came into view. Not
-   meant to be seen; just an IntersectionObserver target. Kept at 1px
-   rather than 0 -- a zero-area rect makes intersection ratio always 0/0,
-   which some engines never report as intersecting. */
-.tacg-anchor {
-  height: 1px;
-  margin: 0;
-  overflow: hidden;
 }
 
 .level-diagram .chart-svg-wrap {
