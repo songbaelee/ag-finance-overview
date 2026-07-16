@@ -617,13 +617,6 @@ table.data-table {
   width: 100%;
 }
 
-.level-row-label {
-  fill: var(--text-secondary);
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 600;
-}
-
 .level-seg-label {
   fill: var(--text-primary);
   font-family: var(--font-sans);

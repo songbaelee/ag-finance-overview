@@ -255,7 +255,7 @@
     });
 
     var W = 640;
-    var plotLeft = 196;
+    var plotLeft = 16;
     var rightPad = 16;
     var plotWidth = W - plotLeft - rightPad;
     var rowH = 34;
@@ -311,14 +311,11 @@
     rows.forEach(function (row, i) {
       var y = topPad + i * (rowH + rowGap);
 
-      var rowLabel = svgEl("text", {
-        class: "level-row-label", x: plotLeft - 14, y: y + rowH / 2,
-        "text-anchor": "end", "dominant-baseline": "middle",
-        style: "fill:" + cssVar("--text-secondary") + ";font-family:" + FONT_STACK + ";font-size:12px;font-weight:600"
-      });
-      rowLabel.textContent = row.def.title;
-      svg.appendChild(rowLabel);
-
+      // Row titles are intentionally not drawn as visible text — the
+      // in-bar segment labels/percentages already make each row's content
+      // clear, and a title per stacked row becomes redundant clutter.
+      // They stay available to assistive tech via the SVG's own
+      // aria-label (below) and each segment's per-hit aria-label.
       var xCursor = plotLeft;
       var segs = row.def.segs;
 
@@ -465,11 +462,9 @@
     }
 
     register("tacg-diagram-0", ["level0"]);
-    register("tacg-diagram-1", ["level0", "level1", "level2", "level3"]);
-    register("tacg-diagram-2", ["level0", "level1", "level2", "level3"], { showGrantsGuide: true });
+    register("tacg-diagram-1", ["level0", "level1", "level2", "level3"], { showGrantsGuide: true });
     register("tacg-diagram-3", ["level0", "level1", "level2", "level3", "level4"], { showGrantsGuide: true });
     register("tacg-diagram-4", ["level0", "level1", "level2", "level3", "level4", "level5"], { showGrantsGuide: true });
-    register("tacg-diagram-5", ["level0", "level1", "level2", "level3", "level4", "level5", "level6"], { showGrantsGuide: true });
     register("tacg-diagram-recap", ["level0", "level1", "level2", "level3", "level4", "level5", "level6"], { showGrantsGuide: true });
 
     rerenderAll();
