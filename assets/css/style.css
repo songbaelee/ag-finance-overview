@@ -21,7 +21,6 @@
   /* categorical data series (fixed order — see marks spec) */
   --series-bank:     #2a78d6; /* slot 1 — blue */
   --series-fund:     #1baf7a; /* slot 2 — aqua */
-  --series-fund-dark: #0f7a54; /* darker aqua — same supply-side family as fund */
   --series-gap:      #c3c2b7; /* unmet — neutral, not a data hue */
   --series-count:    #4a3aa7; /* slot 5 — violet, used for the SME-count line */
   --series-green:    #008300; /* slot — green, Closing the Gap diagram */
@@ -57,7 +56,6 @@
 
     --series-bank:     #3987e5;
     --series-fund:     #199e70;
-    --series-fund-dark: #12885d;
     --series-gap:      #383835;
     --series-count:    #9085e9;
     --series-green:    #008300;

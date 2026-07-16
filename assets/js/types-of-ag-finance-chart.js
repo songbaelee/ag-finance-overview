@@ -13,7 +13,9 @@
 
   var state = {
     demandPct: 60,
-    notAddressablePct: 25
+    // Default high enough that not-addressable is at least half of the
+    // *total* gap, not just of the demand side: 0.60 demand x 0.84 = 50.4%.
+    notAddressablePct: 84
   };
 
   // Fixed illustrative constants. Only the top two levels (demand/supply;
@@ -84,9 +86,9 @@
         title: "Temporary → permanent → temporary again",
         segs: [
           { label: "Not addressable", value: d.notAddressable, varName: "--series-gap" },
-          { label: "Temporary (TA)", value: d.ta, varName: "--series-bank" },
+          { label: "Temporary (technical assistance)", value: d.ta, varName: "--series-bank" },
           { label: "Permanent", value: d.permanent, varName: "--series-fund" },
-          { label: "Temporary again", value: d.tempAgain, varName: "--series-fund-dark" }
+          { label: "Temporary again", value: d.tempAgain, varName: "--series-bank" }
         ]
       };
     },
@@ -145,7 +147,6 @@
   var VAR_FALLBACK = {
     "--series-bank": "#2a78d6",
     "--series-fund": "#1baf7a",
-    "--series-fund-dark": "#0f7a54",
     "--series-gap": "#c3c2b7",
     "--series-count": "#4a3aa7",
     "--series-green": "#008300",
@@ -468,14 +469,16 @@
       );
     }
 
+    // Cumulative: each section's diagram carries every row up through and
+    // including its own new one. The last section's diagram (all 7 rows)
+    // doubles as the recap, so there's no separate recap mount.
     register("tacg-diagram-0", ["level0"]);
-    register("tacg-diagram-1", ["level1"], { showGrantsGuide: true });
-    register("tacg-diagram-2", ["level2"], { showGrantsGuide: true });
-    register("tacg-diagram-3", ["level3"], { showGrantsGuide: true });
-    register("tacg-diagram-4", ["level4"], { showGrantsGuide: true });
-    register("tacg-diagram-5", ["level5"], { showGrantsGuide: true });
-    register("tacg-diagram-6", ["level6"], { showGrantsGuide: true });
-    register("tacg-diagram-recap", ["level0", "level1", "level2", "level3", "level4", "level5", "level6"], { showGrantsGuide: true });
+    register("tacg-diagram-1", ["level0", "level1"], { showGrantsGuide: true });
+    register("tacg-diagram-2", ["level0", "level1", "level2"], { showGrantsGuide: true });
+    register("tacg-diagram-3", ["level0", "level1", "level2", "level3"], { showGrantsGuide: true });
+    register("tacg-diagram-4", ["level0", "level1", "level2", "level3", "level4"], { showGrantsGuide: true });
+    register("tacg-diagram-5", ["level0", "level1", "level2", "level3", "level4", "level5"], { showGrantsGuide: true });
+    register("tacg-diagram-6", ["level0", "level1", "level2", "level3", "level4", "level5", "level6"], { showGrantsGuide: true });
 
     rerenderAll();
   });
