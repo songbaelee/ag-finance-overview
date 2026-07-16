@@ -71,6 +71,16 @@
 
   var ALL_LEVELS = ["level0", "level1", "level2", "level3", "level4", "level5", "level6"];
 
+  var LEVEL_TITLES = {
+    level0: "Demand vs. supply",
+    level1: "Addressable vs. not addressable",
+    level2: "Temporary, permanent, temporary again",
+    level3: "Grants vs. repayable capital",
+    level4: "Grants: TA, incentives, first-loss",
+    level5: "TA: farmer level vs. firm level",
+    level6: "Firm level: BDS vs. investment readiness"
+  };
+
   var ROWBUILDERS = {
     level0: function (d) {
       return {
@@ -501,9 +511,9 @@
     parent.appendChild(row);
   }
 
-  function setToggleUI(btn, active) {
+  function setToggleUI(btn, active, label) {
     btn.setAttribute("aria-pressed", active ? "true" : "false");
-    btn.textContent = active ? "Hide from diagram" : "Show in diagram";
+    btn.textContent = (active ? "✓ " : "") + label;
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -528,9 +538,7 @@
     }
 
     // One diagram DOM node, mounted once in a fixed spot near the top of
-    // the page -- never relocated, never recreated. Each section's toggle
-    // button just adds/removes that level from activeLevels and
-    // re-renders the same node.
+    // the page -- never relocated, never recreated.
     var mount = document.getElementById("tacg-diagram");
     if (mount) {
       mount.classList.add("chart-card", "level-diagram");
@@ -538,16 +546,26 @@
       rerenderDiagram();
     }
 
-    var toggles = Array.prototype.slice.call(document.querySelectorAll(".tacg-toggle"));
-    toggles.forEach(function (btn) {
-      var levelKey = "level" + btn.getAttribute("data-level");
-      var active = diagram.activeLevels.indexOf(levelKey) !== -1;
-      setToggleUI(btn, active);
-      btn.addEventListener("click", function () {
-        var isActive = btn.getAttribute("aria-pressed") === "true";
-        setToggleUI(btn, !isActive);
-        setLevelActive(levelKey, !isActive);
+    // All 7 toggles live together in one cluster next to the diagram,
+    // generated from ALL_LEVELS/LEVEL_TITLES so labels can't drift out of
+    // sync with a hand-written copy in the HTML. Each toggle just adds or
+    // removes that level from activeLevels and re-renders the same node.
+    var toggleGroup = document.getElementById("tacg-toggle-group");
+    if (toggleGroup) {
+      ALL_LEVELS.forEach(function (levelKey) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tacg-toggle";
+        btn.setAttribute("data-level", levelKey.replace("level", ""));
+        var active = diagram.activeLevels.indexOf(levelKey) !== -1;
+        setToggleUI(btn, active, LEVEL_TITLES[levelKey]);
+        btn.addEventListener("click", function () {
+          var isActive = btn.getAttribute("aria-pressed") === "true";
+          setToggleUI(btn, !isActive, LEVEL_TITLES[levelKey]);
+          setLevelActive(levelKey, !isActive);
+        });
+        toggleGroup.appendChild(btn);
       });
-    });
+    }
   });
 })();

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Closing the Gap — Ag Finance Overview</title>
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
 </head>
 <body>
 
@@ -56,10 +56,7 @@
       event; the sliders are an "explore further" layer on top of it.
     </p>
 
-    <div class="chart-title-row">
-      <h3 class="chart-title">Demand side vs. supply side</h3>
-      <button type="button" class="tacg-toggle" data-level="0"></button>
-    </div>
+    <h3 class="chart-title">Demand side vs. supply side</h3>
     <p>
       The most basic split: is the constraint on the firm's side, or the
       capital provider's side?
@@ -80,12 +77,16 @@
     </p>
 
     <div class="tacg-controls" id="tacg-controls-demand-supply"></div>
+
+    <div class="tacg-toggle-panel">
+      <p class="tacg-toggle-panel__label">
+        Choose which levels to show in the diagram below:
+      </p>
+      <div id="tacg-toggle-group" class="tacg-toggle-group"></div>
+    </div>
     <div id="tacg-diagram" aria-label="Illustrative breakdown of the agri-SME financing gap"></div>
 
-    <div class="chart-title-row">
-      <h3 class="chart-title">Three lenses, one gap</h3>
-      <button type="button" class="tacg-toggle" data-level="1"></button>
-    </div>
+    <h3 class="chart-title">Three lenses, one gap</h3>
     <p>
       Demand/supply is one way to cut the $74B. Two more, applied at the same
       time rather than sequentially:
@@ -108,10 +109,7 @@
 
     <div class="tacg-controls" id="tacg-controls-addressable"></div>
 
-    <div class="chart-title-row">
-      <h3 class="chart-title">Why "addressable" isn't one thing</h3>
-      <button type="button" class="tacg-toggle" data-level="2"></button>
-    </div>
+    <h3 class="chart-title">Why "addressable" isn't one thing</h3>
     <p>
       Within the addressable portion, we see a pattern that isn't a simple
       binary — it's temporary, then permanent, then temporary again:
@@ -148,10 +146,7 @@
       </p>
     </div>
 
-    <div class="chart-title-row">
-      <h3 class="chart-title">Grants vs. repayable capital, mapped on</h3>
-      <button type="button" class="tacg-toggle" data-level="3"></button>
-    </div>
+    <h3 class="chart-title">Grants vs. repayable capital, mapped on</h3>
     <p>
       Grants fund the not-addressable segment, the first temporary (TA)
       segment, and part of the permanent segment. Repayable capital funds
@@ -176,10 +171,7 @@
       </p>
     </div>
 
-    <div class="chart-title-row">
-      <h3 class="chart-title">Within grants: TA, incentives, first-loss</h3>
-      <button type="button" class="tacg-toggle" data-level="4"></button>
-    </div>
+    <h3 class="chart-title">Within grants: TA, incentives, first-loss</h3>
     <ul>
       <li><strong>TA</strong> — the demand-side mechanism, covered above.</li>
       <li>
@@ -210,10 +202,7 @@
       </p>
     </div>
 
-    <div class="chart-title-row">
-      <h3 class="chart-title">Within TA: farmer level vs. firm level</h3>
-      <button type="button" class="tacg-toggle" data-level="5"></button>
-    </div>
+    <h3 class="chart-title">Within TA: farmer level vs. firm level</h3>
     <p>Technical assistance itself splits by who receives it:</p>
     <ul>
       <li>
@@ -233,10 +222,7 @@
       of this row's split.
     </p>
 
-    <div class="chart-title-row">
-      <h3 class="chart-title">Within firm-level TA: BDS vs. investment readiness</h3>
-      <button type="button" class="tacg-toggle" data-level="6"></button>
-    </div>
+    <h3 class="chart-title">Within firm-level TA: BDS vs. investment readiness</h3>
     <ul>
       <li>
         <strong>Business Development Services (BDS):</strong> non-financial
@@ -295,6 +281,6 @@
   <p>Ag Finance Overview is a resource for development staff without a finance background.</p>
 </footer>
 
-<script src="assets/js/types-of-ag-finance-chart.js"></script>
+<script src="assets/js/types-of-ag-finance-chart.js?v=2"></script>
 </body>
 </html>
