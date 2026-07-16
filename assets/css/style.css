@@ -609,8 +609,15 @@ table.data-table {
   margin: 1.5rem 0 1.25rem;
 }
 
-.level-diagram--recap {
-  margin-top: 1.75rem;
+/* Near-zero-height scroll markers — the single growing diagram relocates
+   to sit right after whichever one most recently came into view. Not
+   meant to be seen; just an IntersectionObserver target. Kept at 1px
+   rather than 0 -- a zero-area rect makes intersection ratio always 0/0,
+   which some engines never report as intersecting. */
+.tacg-anchor {
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
 }
 
 .level-diagram .chart-svg-wrap {
@@ -646,6 +653,22 @@ table.data-table {
 .level-seg-hit {
   fill: transparent;
   cursor: pointer;
+}
+
+/* Leader-line label for an active segment too narrow to hold its own
+   in-bar text -- a short tick out to a label placed in the row gap,
+   instead of just hiding the label (that suppression is reserved for
+   muted/inactive context segments only). */
+.level-leader-line {
+  stroke: var(--text-secondary);
+  stroke-width: 1;
+}
+
+.level-leader-label {
+  fill: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .level-seg-hit:focus-visible {

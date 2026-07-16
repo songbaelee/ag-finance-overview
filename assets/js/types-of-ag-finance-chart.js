@@ -1,11 +1,14 @@
-/* "Closing the Gap" — stacked horizontal-bar diagrams of the illustrative
-   demand/supply -> addressable -> temporary/permanent -> grants/repayable
-   -> TA -> farmer/firm -> BDS/investment-readiness tree. One reusable
-   render function draws a shared-width row per level, with dashed guide
-   lines carrying the demand/supply and grants/repayable boundaries down
-   through the stack. Two top-level sliders (demand/supply share;
-   not-addressable share of demand) recompute every mounted diagram on the
-   page from shared, session-only state — no persistence, no backend. */
+/* "Closing the Gap" — a single stacked horizontal-bar diagram of the
+   illustrative demand/supply -> addressable -> temporary/permanent ->
+   grants/repayable -> TA -> farmer/firm -> BDS/investment-readiness tree.
+   There is exactly one diagram DOM node for the whole page: as the reader
+   scrolls past each section, an IntersectionObserver relocates that same
+   node to sit right after the section just read and appends a new row to
+   it -- never a new instance, never redrawn from scratch as "new
+   content," just extended. By the last section it holds all 7 rows and
+   doubles as the recap. Two top-level sliders (demand/supply share;
+   not-addressable share of demand) recompute every currently-shown row
+   from shared, session-only state — no persistence, no backend. */
 (function () {
   "use strict";
 
@@ -320,6 +323,8 @@
       // aria-label (below) and each segment's per-hit aria-label.
       var xCursor = plotLeft;
       var segs = row.def.segs;
+      var narrowActiveCount = 0;
+      var isFirstRow = i === 0;
 
       segs.forEach(function (seg, si) {
         var w = Math.max((seg.value / 100) * plotWidth, 0.01);
@@ -350,6 +355,29 @@
           });
           pct.textContent = Math.round(seg.value) + "%";
           svg.appendChild(pct);
+        } else if (!seg.muted) {
+          // Active but too narrow to hold its own label -- a leader line
+          // out to a label in the row-gap above, rather than just
+          // suppressing it (that suppression is reserved for muted
+          // context segments only). Consecutive narrow segments in the
+          // same row stagger further out so their labels don't collide.
+          var segCenter = xCursor + w / 2;
+          var offset = 8 + narrowActiveCount * 10;
+          var labelY = isFirstRow ? y + rowH + offset + 8 : y - offset;
+          var tickY2 = isFirstRow ? y + rowH : y;
+          var tickY1 = isFirstRow ? labelY - 6 : labelY + 4;
+          narrowActiveCount++;
+
+          svg.appendChild(svgEl("line", {
+            class: "level-leader-line", x1: segCenter, x2: segCenter, y1: tickY1, y2: tickY2,
+            style: "stroke:" + cssVar("--text-secondary") + ";stroke-width:1"
+          }));
+          var leaderLbl = svgEl("text", {
+            class: "level-leader-label", x: segCenter, y: labelY, "text-anchor": "middle",
+            style: "fill:" + cssVar("--text-primary") + ";font-family:" + FONT_STACK + ";font-size:10px;font-weight:600"
+          });
+          leaderLbl.textContent = seg.label + " · " + Math.round(seg.value) + "%";
+          svg.appendChild(leaderLbl);
         }
 
         var hit = svgEl("rect", {
@@ -401,20 +429,28 @@
     container.insertBefore(svgWrap, tip);
   }
 
-  var registry = [];
+  // Single-diagram state: one DOM node for the entire feature. It gets
+  // relocated (not recreated) to sit right after whichever section anchor
+  // most recently scrolled into view, and its levelKeys array only ever
+  // grows -- rows are never removed once added.
+  var diagram = {
+    container: null,
+    levelKeys: []
+  };
 
-  function register(id, levelKeys, opts) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.classList.add("chart-card", "level-diagram");
-      registry.push({ container: el, levelKeys: levelKeys, opts: opts || {} });
-    }
+  function rerenderDiagram() {
+    if (!diagram.container) return;
+    var opts = diagram.levelKeys.length > 1 ? { showGrantsGuide: true } : {};
+    renderLevelDiagram(diagram.container, diagram.levelKeys, opts);
   }
 
-  function rerenderAll() {
-    registry.forEach(function (r) {
-      renderLevelDiagram(r.container, r.levelKeys, r.opts);
-    });
+  function appendLevel(levelKey, anchorEl) {
+    if (diagram.levelKeys.indexOf(levelKey) !== -1) return;
+    diagram.levelKeys.push(levelKey);
+    if (anchorEl && anchorEl.parentNode) {
+      anchorEl.parentNode.insertBefore(diagram.container, anchorEl.nextSibling);
+    }
+    rerenderDiagram();
   }
 
   function buildSliderRow(parent, id, labelText, min, max, value, fmt, onChange) {
@@ -441,7 +477,7 @@
       var v = Number(input.value);
       strong.textContent = fmt(v);
       onChange(v);
-      rerenderAll();
+      rerenderDiagram();
     });
     row.appendChild(input);
 
@@ -469,17 +505,47 @@
       );
     }
 
-    // Cumulative: each section's diagram carries every row up through and
-    // including its own new one. The last section's diagram (all 7 rows)
-    // doubles as the recap, so there's no separate recap mount.
-    register("tacg-diagram-0", ["level0"]);
-    register("tacg-diagram-1", ["level0", "level1"], { showGrantsGuide: true });
-    register("tacg-diagram-2", ["level0", "level1", "level2"], { showGrantsGuide: true });
-    register("tacg-diagram-3", ["level0", "level1", "level2", "level3"], { showGrantsGuide: true });
-    register("tacg-diagram-4", ["level0", "level1", "level2", "level3", "level4"], { showGrantsGuide: true });
-    register("tacg-diagram-5", ["level0", "level1", "level2", "level3", "level4", "level5"], { showGrantsGuide: true });
-    register("tacg-diagram-6", ["level0", "level1", "level2", "level3", "level4", "level5", "level6"], { showGrantsGuide: true });
+    // One diagram DOM node for the whole page. Anchors are zero-height
+    // markers, one per section, positioned where that section's row
+    // should appear. The node itself gets created once, placed after
+    // anchor 0 with row0 already rendered, then relocated + extended as
+    // each later anchor scrolls into view -- never recreated.
+    var anchors = Array.prototype.slice.call(document.querySelectorAll(".tacg-anchor"));
+    if (anchors.length === 0) return;
 
-    rerenderAll();
+    anchors.sort(function (a, b) {
+      return Number(a.getAttribute("data-level")) - Number(b.getAttribute("data-level"));
+    });
+
+    diagram.container = document.createElement("div");
+    diagram.container.className = "chart-card level-diagram";
+
+    var anchor0 = anchors[0];
+    anchor0.parentNode.insertBefore(diagram.container, anchor0.nextSibling);
+    diagram.levelKeys = ["level0"];
+    rerenderDiagram();
+
+    var laterAnchors = anchors.slice(1);
+    if (laterAnchors.length === 0) return;
+
+    if ("IntersectionObserver" in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        var visible = entries.filter(function (entry) { return entry.isIntersecting; });
+        visible.sort(function (a, b) {
+          return Number(a.target.getAttribute("data-level")) - Number(b.target.getAttribute("data-level"));
+        });
+        visible.forEach(function (entry) {
+          appendLevel("level" + entry.target.getAttribute("data-level"), entry.target);
+          observer.unobserve(entry.target);
+        });
+      });
+      laterAnchors.forEach(function (a) { observer.observe(a); });
+    } else {
+      // No IntersectionObserver support -- just add every remaining row
+      // immediately so the page still works, just without the reveal.
+      laterAnchors.forEach(function (a) {
+        appendLevel("level" + a.getAttribute("data-level"), a);
+      });
+    }
   });
 })();
