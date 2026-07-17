@@ -712,41 +712,33 @@ table.data-table {
   outline-offset: 1px;
 }
 
-/* ---------- sliders (session-only "explore further" controls) ---------- */
-
-.tacg-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1rem 1.25rem;
-  margin: 1.25rem 0 1.5rem;
+/* Muted context segments: dashed outline, no fill -- either a different
+   scope than what the row subdivides, or a segment that already got its
+   full presentation in an earlier row. */
+.level-seg-muted {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 3;
 }
 
-.tacg-slider-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+/* ---------- draggable dividers (session-only "explore further" controls) ---------- */
+
+.tacg-divider-grip {
+  fill: var(--surface-1);
+  stroke: var(--text-secondary);
+  stroke-width: 1.25;
+  pointer-events: none;
 }
 
-.tacg-slider-row__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+.tacg-divider-hit {
+  fill: transparent;
+  cursor: ew-resize;
 }
 
-.tacg-slider-row__head strong {
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-}
-
-.tacg-slider-row input[type="range"] {
-  width: 100%;
-  accent-color: var(--series-bank);
+.tacg-divider-hit:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 1px;
 }
 
 /* ---------- further reading ---------- */

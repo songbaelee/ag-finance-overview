@@ -5,9 +5,11 @@
    near the top and never relocated. Each of the 7 sections has its own
    click-to-toggle button; toggling a level on/off adds or removes that
    row from the diagram (rows always render in level0..level6 order
-   regardless of toggle order). Two top-level sliders (demand/supply
-   share; not-addressable share of demand) recompute every currently-shown
-   row from shared, session-only state — no persistence, no backend. */
+   regardless of toggle order). Two dashed dividers double as drag
+   handles directly on the bars (demand/supply on the top row; grants/
+   repayable wherever that split is visible) and recompute every
+   currently-shown row from shared, session-only state — no persistence,
+   no backend, no separate slider UI. */
 (function () {
   "use strict";
 
@@ -15,16 +17,20 @@
 
   var state = {
     demandPct: 60,
-    // Default high enough that not-addressable is at least half of the
-    // *total* gap, not just of the demand side: 0.60 demand x 0.84 = 50.4%.
-    notAddressablePct: 84
+    // Share of the "permanent" supply segment that's grant-funded rather
+    // than repayable. This is the one thing the grants/repayable divider
+    // actually drags — notAddressable+ta already equals the full demand
+    // share, so that portion is always grants regardless of this value.
+    grantPctOfPermanent: 50
   };
 
-  // Fixed illustrative constants. Only the top two levels (demand/supply;
-  // addressable/not addressable) get real sliders — everything below
-  // recomputes proportionally from those two inputs.
+  var DEMAND_PCT_MIN = 30, DEMAND_PCT_MAX = 80;
+
+  // Fixed illustrative constants — not addressable's share no longer has
+  // its own control (see grantPctOfPermanent above for the one dial that
+  // replaced it); everything below recomputes proportionally.
+  var NOT_ADDRESSABLE_PCT_OF_DEMAND = 84;
   var TEMP_AGAIN_PCT_OF_SUPPLY = 15;
-  var GRANT_PCT_OF_PERMANENT = 50;
   var FARMER_PCT_OF_TA = 55;
   var BDS_PCT_OF_FIRM = 70;
 
@@ -32,13 +38,13 @@
     var demand = state.demandPct;
     var supply = 100 - demand;
 
-    var notAddressable = demand * state.notAddressablePct / 100;
+    var notAddressable = demand * NOT_ADDRESSABLE_PCT_OF_DEMAND / 100;
     var ta = demand - notAddressable;
 
     var permanent = supply * (1 - TEMP_AGAIN_PCT_OF_SUPPLY / 100);
     var tempAgain = supply * (TEMP_AGAIN_PCT_OF_SUPPLY / 100);
 
-    var grantPortion = permanent * GRANT_PCT_OF_PERMANENT / 100;
+    var grantPortion = permanent * state.grantPctOfPermanent / 100;
     var repayablePortion = permanent - grantPortion;
 
     var grants = notAddressable + ta + grantPortion;
@@ -104,7 +110,7 @@
       return {
         title: "Temporary → permanent → temporary again",
         segs: [
-          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap" },
+          { label: "Not addressable", value: d.notAddressable, varName: "--series-gap", muted: true },
           { label: "Temporary (technical assistance)", value: d.ta, varName: "--series-bank" },
           { label: "Permanent", value: d.permanent, varName: "--series-fund" },
           { label: "Temporary again", value: d.tempAgain, varName: "--series-bank" }
@@ -225,7 +231,7 @@
     return tip;
   }
 
-  function fillSegTooltip(tip, rowTitle, seg, fillVarName) {
+  function fillSegTooltip(tip, rowTitle, seg) {
     tip.textContent = "";
     var title = document.createElement("div");
     title.className = "tt-title";
@@ -236,7 +242,7 @@
     row.className = "tt-row";
     var key = document.createElement("span");
     key.className = "tt-key";
-    key.style.background = cssVar(fillVarName || seg.varName);
+    key.style.background = cssVar(seg.varName);
     row.appendChild(key);
     var label = document.createElement("span");
     label.textContent = seg.label + (seg.muted ? " (not broken out at this level)" : "");
@@ -336,8 +342,19 @@
 
     var tip = buildTooltip(container);
 
+    // y of the top row (always index 0) hosts the demand/supply handle;
+    // the grants/repayable handle sits on the first active row that
+    // actually displays that split (level3, or a deeper row where the
+    // same boundary still lines up between segments).
+    var demandHandleY = topPad;
+    var grantsHandleY = null;
+
     rows.forEach(function (row, i) {
       var y = topPad + i * (rowH + rowGap);
+      if (grantsHandleY === null &&
+        (row.key === "level3" || row.key === "level4" || row.key === "level5" || row.key === "level6")) {
+        grantsHandleY = y;
+      }
 
       // Row titles are intentionally not drawn as visible text — the
       // in-bar segment labels/percentages already make each row's content
@@ -353,16 +370,21 @@
         var w = Math.max((seg.value / 100) * plotWidth, 0.01);
         var isFirst = si === 0, isLast = si === segs.length - 1;
         var rL = isFirst ? 4 : 0, rR = isLast ? 4 : 0;
+
         // Muted segments are context from a different scope than what this
         // row subdivides (e.g. the supply side, on a row that only breaks
-        // down TA) -- rendered as neutral grey with no label, so they read
-        // as inactive backdrop rather than an actual further split.
-        var fillVarName = seg.muted ? "--series-gap" : seg.varName;
-
-        var path = svgEl("path", {
+        // down TA), or a segment that already got its full presentation in
+        // an earlier row (e.g. "not addressable"). Either way they render
+        // as a dashed outline with no fill and no label, so they read as
+        // inactive backdrop rather than a repeat of an actual split.
+        var pathAttrs = {
           d: roundedHBarPath(xCursor, y, w, rowH, rL, rR),
-          style: "fill:" + cssVar(fillVarName)
-        });
+          style: seg.muted
+            ? "fill:none;stroke:" + cssVar("--text-muted") + ";stroke-width:1.25;stroke-dasharray:4 3"
+            : "fill:" + cssVar(seg.varName)
+        };
+        if (seg.muted) pathAttrs.class = "level-seg-muted";
+        var path = svgEl("path", pathAttrs);
         svg.appendChild(path);
 
         if (!seg.muted && w > 78) {
@@ -412,7 +434,7 @@
         });
 
         function show(evt) {
-          fillSegTooltip(tip, row.def.title, seg, fillVarName);
+          fillSegTooltip(tip, row.def.title, seg);
           tip.classList.add("is-visible");
           if (evt && evt.clientX !== undefined) positionTooltip(tip, container, evt);
         }
@@ -431,7 +453,7 @@
         hit.addEventListener("blur", hide);
         svg.appendChild(hit);
 
-        if (!isLast) {
+        if (!isLast && !seg.muted && !segs[si + 1].muted) {
           var nextW = Math.max((segs[si + 1].value / 100) * plotWidth, 0.01);
           var sep = separatorThickness(w, nextW);
           if (sep > 0) {
@@ -446,10 +468,110 @@
       });
     });
 
+    // Draggable dividers, layered on top of everything else so they win
+    // pointer hits over the segments' own tooltip hit-rects underneath.
+    // Each is a full-height invisible drag/keyboard target along the
+    // dashed guide line, plus a small visible grip at the row where that
+    // split is actually shown, so grabbing anywhere on the rail works but
+    // the affordance reads clearly at the relevant bar.
+    var pendingFocusEl = null;
+
+    function addDivider(key, x, handleY, min, max, get, set, ariaLabel) {
+      var gripW = 10, gripH = rowH + 8;
+      svg.appendChild(svgEl("rect", {
+        class: "tacg-divider-grip",
+        x: x - gripW / 2, y: handleY - 4, width: gripW, height: gripH, rx: gripW / 2,
+        style: "fill:" + cssVar("--surface-1") + ";stroke:" + cssVar("--text-secondary") +
+          ";stroke-width:1.25;pointer-events:none"
+      }));
+
+      var hitW = 22;
+      var hit = svgEl("rect", {
+        class: "tacg-divider-hit",
+        x: x - hitW / 2, y: guideTop, width: hitW, height: guideBottom - guideTop,
+        style: "fill:transparent;cursor:ew-resize",
+        tabindex: "0", role: "slider",
+        "aria-label": ariaLabel,
+        "aria-valuemin": String(Math.round(min)),
+        "aria-valuemax": String(Math.round(max)),
+        "aria-valuenow": String(Math.round(get()))
+      });
+
+      function xToPct(clientX) {
+        var currentSvg = container.querySelector("svg");
+        var rect = currentSvg.getBoundingClientRect();
+        var scale = W / rect.width;
+        return ((clientX - rect.left) * scale - plotLeft) / plotWidth * 100;
+      }
+
+      function applyPct(pct) {
+        set(pct);
+        focusedDividerKey = key;
+        rerenderDiagram();
+      }
+
+      function onMove(evt) { applyPct(xToPct(evt.clientX)); }
+      function onUp() {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+      }
+      hit.addEventListener("pointerdown", function (evt) {
+        evt.preventDefault();
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
+      });
+
+      hit.addEventListener("keydown", function (evt) {
+        var step = evt.shiftKey ? 5 : 1;
+        if (evt.key === "ArrowLeft" || evt.key === "ArrowDown") {
+          evt.preventDefault();
+          applyPct(get() - step);
+        } else if (evt.key === "ArrowRight" || evt.key === "ArrowUp") {
+          evt.preventDefault();
+          applyPct(get() + step);
+        }
+      });
+
+      hit.addEventListener("focus", function () { focusedDividerKey = key; });
+      hit.addEventListener("blur", function () {
+        if (focusedDividerKey === key) focusedDividerKey = null;
+      });
+
+      svg.appendChild(hit);
+      if (focusedDividerKey === key) pendingFocusEl = hit;
+    }
+
+    addDivider(
+      "demand-supply", demandSupplyX, demandHandleY, DEMAND_PCT_MIN, DEMAND_PCT_MAX,
+      function () { return state.demandPct; },
+      function (pct) { state.demandPct = Math.max(DEMAND_PCT_MIN, Math.min(DEMAND_PCT_MAX, pct)); },
+      "Demand share of the gap, draggable. Currently " + Math.round(d.demand) +
+        "% demand, " + Math.round(d.supply) + "% supply."
+    );
+
+    if (opts.showGrantsGuide && grantsHandleY !== null) {
+      addDivider(
+        "grants-repayable", grantsX, grantsHandleY, d.demand, 100 - d.tempAgain,
+        function () { return compute().grants; },
+        function (pct) {
+          var dd = compute();
+          var lo = dd.demand, hi = 100 - dd.tempAgain;
+          var clamped = Math.max(lo, Math.min(hi, pct));
+          var grantPortion = clamped - dd.demand;
+          state.grantPctOfPermanent = dd.permanent > 0
+            ? Math.max(0, Math.min(100, grantPortion / dd.permanent * 100))
+            : 0;
+        },
+        "Grants share of the response, draggable. Currently " + Math.round(d.grants) +
+          "% grants, " + Math.round(d.repayable) + "% repayable capital."
+      );
+    }
+
     var svgWrap = document.createElement("div");
     svgWrap.className = "chart-svg-wrap";
     svgWrap.appendChild(svg);
     container.insertBefore(svgWrap, tip);
+    if (pendingFocusEl) pendingFocusEl.focus({ preventScroll: true });
   }
 
   // Single-diagram state: one DOM node, mounted once, never relocated.
@@ -460,6 +582,13 @@
     activeLevels: ["level0"]
   };
 
+  // Key of whichever divider currently holds keyboard focus, so a
+  // full-diagram rebuild triggered by that same divider (drag or arrow-key
+  // nudge) can restore focus to its replacement element afterward.
+  var focusedDividerKey = null;
+
+  var GRANTS_ROW_KEYS = ["level3", "level4", "level5", "level6"];
+
   function sortedActiveLevels() {
     return ALL_LEVELS.filter(function (lvl) {
       return diagram.activeLevels.indexOf(lvl) !== -1;
@@ -469,8 +598,10 @@
   function rerenderDiagram() {
     if (!diagram.container) return;
     var levels = sortedActiveLevels();
-    var opts = levels.length > 1 ? { showGrantsGuide: true } : {};
-    renderLevelDiagram(diagram.container, levels, opts);
+    var showGrantsGuide = levels.some(function (lvl) {
+      return GRANTS_ROW_KEYS.indexOf(lvl) !== -1;
+    });
+    renderLevelDiagram(diagram.container, levels, { showGrantsGuide: showGrantsGuide });
   }
 
   function setLevelActive(levelKey, active) {
@@ -480,63 +611,12 @@
     rerenderDiagram();
   }
 
-  function buildSliderRow(parent, id, labelText, min, max, value, fmt, onChange) {
-    var row = document.createElement("div");
-    row.className = "tacg-slider-row";
-
-    var head = document.createElement("div");
-    head.className = "tacg-slider-row__head";
-    var span = document.createElement("span");
-    span.textContent = labelText;
-    var strong = document.createElement("strong");
-    strong.textContent = fmt(value);
-    head.appendChild(span);
-    head.appendChild(strong);
-    row.appendChild(head);
-
-    var input = document.createElement("input");
-    input.type = "range";
-    input.min = String(min);
-    input.max = String(max);
-    input.value = String(value);
-    input.id = id;
-    input.addEventListener("input", function () {
-      var v = Number(input.value);
-      strong.textContent = fmt(v);
-      onChange(v);
-      rerenderDiagram();
-    });
-    row.appendChild(input);
-
-    parent.appendChild(row);
-  }
-
   function setToggleUI(btn, active, label) {
     btn.setAttribute("aria-pressed", active ? "true" : "false");
     btn.textContent = (active ? "✓ " : "") + label;
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    var ctrlDemandSupply = document.getElementById("tacg-controls-demand-supply");
-    if (ctrlDemandSupply) {
-      buildSliderRow(
-        ctrlDemandSupply, "tacg-slider-demand", "Demand share of the gap",
-        30, 80, state.demandPct,
-        function (v) { return v + "% demand / " + (100 - v) + "% supply"; },
-        function (v) { state.demandPct = v; }
-      );
-    }
-
-    var ctrlAddressable = document.getElementById("tacg-controls-addressable");
-    if (ctrlAddressable) {
-      buildSliderRow(
-        ctrlAddressable, "tacg-slider-notaddr", "Not-addressable share of the demand side",
-        0, 95, state.notAddressablePct,
-        function (v) { return v + "% of demand side"; },
-        function (v) { state.notAddressablePct = v; }
-      );
-    }
-
     // One diagram DOM node, mounted once in a fixed spot near the top of
     // the page -- never relocated, never recreated.
     var mount = document.getElementById("tacg-diagram");
