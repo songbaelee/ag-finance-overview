@@ -741,6 +741,43 @@ table.data-table {
   outline-offset: 1px;
 }
 
+/* ---------- market sizing demand controls (avg-size sliders) ---------- */
+
+.ms-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.ms-slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ms-slider-row__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.ms-slider-row__head strong {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ms-slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--series-bank);
+}
+
 /* ---------- further reading ---------- */
 
 .further-reading {

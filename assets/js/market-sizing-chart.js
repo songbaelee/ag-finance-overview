@@ -1,17 +1,71 @@
-/* Stacked bar chart — illustrative bank/fund/gap segmentation by tier,
-   with a secondary-axis line for # of SMEs per tier — plus a donut chart
-   showing the composition of total demand. Self-contained: no libraries,
-   static data, plain SVG plus a small hover/focus tooltip layer. */
+/* Illustrative demand-side model for Market Sizing: one state object
+   (three tiers, each with a count and an average transaction size),
+   read by every view on the page -- a draggable population bar, three
+   independent avg-size sliders, the stacked $ bar chart + SME-count
+   line, the composition donut, the data table, and a comparison note.
+   Supply-side figures (bank/fund/gap composition) are frozen constants
+   for this phase; only demand-side count/avgSize are adjustable.
+   Self-contained: no libraries, session-only state, no backend. */
 (function () {
   "use strict";
 
   var SVG_NS = "http://www.w3.org/2000/svg";
 
-  var DATA = [
-    { name: "Small SME", bank: 0.1, fund: 0.4, gap: 11.2, total: 11.7, count: 78000 },
-    { name: "Medium SME", bank: 1.4, fund: 1.6, gap: 16.5, total: 19.5, count: 39000 },
-    { name: "Upper SME", bank: 9.5, fund: 1.0, gap: 46.7, total: 57.2, count: 13000 }
-  ];
+  var TOTAL_COUNT = 130000;
+
+  // Frozen supply-side figures ($B) -- next phase, not adjustable here.
+  var SUPPLY = {
+    small: { bank: 0.1, fund: 0.4 },
+    medium: { bank: 1.4, fund: 1.6 },
+    upper: { bank: 9.5, fund: 1.0 }
+  };
+
+  var AVG_SIZE_RANGE = {
+    small: { min: 50000, max: 450000, step: 5000 },
+    medium: { min: 150000, max: 1500000, step: 10000 },
+    upper: { min: 1500000, max: 10000000, step: 50000 }
+  };
+
+  var REPORTED_TOTAL_DEMAND_B = 88.1;
+
+  var state = {
+    segments: [
+      { key: "small", name: "Small SME", count: 78000, avgSize: 150000 },
+      { key: "medium", name: "Medium SME", count: 39000, avgSize: 500000 },
+      { key: "upper", name: "Upper SME", count: 13000, avgSize: 4400000 }
+    ]
+  };
+
+  function compute() {
+    var rows = state.segments.map(function (seg) {
+      var totalB = (seg.count * seg.avgSize) / 1e9;
+      var sup = SUPPLY[seg.key];
+      var supplyTotal = sup.bank + sup.fund;
+      var gap = totalB - supplyTotal;
+      var pctMet = totalB > 0 ? (supplyTotal / totalB) * 100 : 0;
+      return {
+        key: seg.key, name: seg.name, count: seg.count, avgSize: seg.avgSize,
+        total: totalB, bank: sup.bank, fund: sup.fund, supplyTotal: supplyTotal,
+        gap: gap, pctMet: pctMet
+      };
+    });
+
+    var totalDemand = rows.reduce(function (s, r) { return s + r.total; }, 0);
+    var totalSupply = rows.reduce(function (s, r) { return s + r.supplyTotal; }, 0);
+    var totalGap = totalDemand - totalSupply;
+    var totalPctMet = totalDemand > 0 ? (totalSupply / totalDemand) * 100 : 0;
+    var totalAvg = TOTAL_COUNT > 0 ? (totalDemand * 1e9) / TOTAL_COUNT : 0;
+
+    return {
+      rows: rows,
+      totalCount: TOTAL_COUNT,
+      totalAvg: totalAvg,
+      totalDemand: totalDemand,
+      totalSupply: totalSupply,
+      totalGap: totalGap,
+      totalPctMet: totalPctMet
+    };
+  }
 
   var SERIES = [
     { key: "bank", label: "Bank supply", varName: "--series-bank" },
@@ -19,21 +73,41 @@
     { key: "gap", label: "Unmet gap", varName: "--series-gap" }
   ];
 
-  var LEFT_DOMAIN_MAX = 60;
-  var LEFT_TICKS = [0, 20, 40, 60];
-  var RIGHT_DOMAIN_MAX = 80000;
-  var RIGHT_TICKS = [0, 20000, 40000, 60000, 80000];
+  var RIGHT_DOMAIN_MAX = TOTAL_COUNT;
+  var RIGHT_TICKS = [0, 50000, 100000, TOTAL_COUNT];
 
   function fmtB(v) {
     return "$" + (Math.round(v * 10) / 10).toFixed(1) + "B";
   }
 
   function fmtCount(v) {
-    return v.toLocaleString("en-US");
+    return Math.round(v).toLocaleString("en-US");
   }
 
   function fmtCountShort(v) {
     return (v / 1000) + "K";
+  }
+
+  function fmtMoney(v) {
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+    if (v >= 1e3) return "$" + Math.round(v / 1e3) + "K";
+    return "$" + Math.round(v);
+  }
+
+  // Rounds a raw value up to a "nice" 1/2/5 x 10^n ceiling, so a dynamic
+  // axis domain (driven by adjustable sliders, not fixed data) still gets
+  // clean-looking gridlines instead of an arbitrary max.
+  function niceCeil(v) {
+    if (v <= 0) return 1;
+    var mag = Math.pow(10, Math.floor(Math.log10(v)));
+    var norm = v / mag;
+    var niceNorm = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+    return niceNorm * mag;
+  }
+
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
   }
 
   function svgEl(tag, attrs) {
@@ -56,6 +130,23 @@
       "L", x + w - rad, yTop,
       "Q", x + w, yTop, x + w, yTop + rad,
       "L", x + w, yBottom,
+      "Z"
+    ].join(" ");
+  }
+
+  function roundedHBarPath(x, y, w, h, rL, rR) {
+    rL = Math.max(0, Math.min(rL, h / 2, w / 2));
+    rR = Math.max(0, Math.min(rR, h / 2, w / 2));
+    return [
+      "M", x + rL, y,
+      "L", x + w - rR, y,
+      "Q", x + w, y, x + w, y + rR,
+      "L", x + w, y + h - rR,
+      "Q", x + w, y + h, x + w - rR, y + h,
+      "L", x + rL, y + h,
+      "Q", x, y + h, x, y + h - rL,
+      "L", x, y + rL,
+      "Q", x, y, x + rL, y,
       "Z"
     ].join(" ");
   }
@@ -157,6 +248,13 @@
   }
 
   function renderBarChart(container) {
+    container.innerHTML = "";
+
+    var rows = compute().rows;
+    var maxTierTotal = rows.reduce(function (m, r) { return Math.max(m, r.total); }, 0);
+    var LEFT_DOMAIN_MAX = niceCeil(maxTierTotal * 1.15);
+    var LEFT_TICKS = [0, LEFT_DOMAIN_MAX / 4, LEFT_DOMAIN_MAX / 2, LEFT_DOMAIN_MAX * 3 / 4, LEFT_DOMAIN_MAX];
+
     var W = 640, H = 380;
     var margin = { top: 52, right: 70, bottom: 62, left: 60 };
     var plotW = W - margin.left - margin.right;
@@ -199,7 +297,7 @@
         "text-anchor": "end",
         "dominant-baseline": "middle"
       });
-      label.textContent = "$" + t + "B";
+      label.textContent = fmtB(t);
       svg.appendChild(label);
     });
 
@@ -261,7 +359,7 @@
       })
     );
 
-    var slotCount = DATA.length;
+    var slotCount = rows.length;
     var slotW = plotW / slotCount;
     var barWidth = 24;
 
@@ -270,7 +368,7 @@
 
     var linePoints = [];
 
-    DATA.forEach(function (tier, i) {
+    rows.forEach(function (tier, i) {
       var slotCenter = margin.left + slotW * (i + 0.5);
       var barX = slotCenter - barWidth / 2;
 
@@ -478,10 +576,15 @@
   }
 
   function renderCompositionDonut(container) {
+    container.innerHTML = "";
+
+    var c = compute();
+    var bankTotal = c.rows.reduce(function (s, r) { return s + r.bank; }, 0);
+    var fundTotal = c.rows.reduce(function (s, r) { return s + r.fund; }, 0);
     var composition = [
-      { key: "bank", label: "Bank supply", varName: "--series-bank", value: 11.0 },
-      { key: "fund", label: "Fund supply", varName: "--series-fund", value: 3.0 },
-      { key: "gap", label: "Unmet gap", varName: "--series-gap", value: 74.4 }
+      { key: "bank", label: "Bank supply", varName: "--series-bank", value: bankTotal },
+      { key: "fund", label: "Fund supply", varName: "--series-fund", value: fundTotal },
+      { key: "gap", label: "Unmet gap", varName: "--series-gap", value: c.totalGap }
     ];
     var total = composition.reduce(function (sum, d) { return sum + d.value; }, 0);
 
@@ -496,7 +599,7 @@
       viewBox: "0 0 " + size + " " + size,
       role: "img",
       "aria-label":
-        "Donut chart showing the composition of the $88.4 billion illustrative " +
+        "Donut chart showing the composition of the " + fmtB(total) + " illustrative " +
         "total demand: bank supply, fund supply, and unmet gap."
     });
 
@@ -506,7 +609,7 @@
 
     var cumulative = 0;
     composition.forEach(function (d) {
-      var fraction = d.value / total;
+      var fraction = total > 0 ? d.value / total : 0;
       var rawLen = circumference * fraction;
       var drawLen = Math.max(1, rawLen - GAP);
       var circle = svgEl("circle", {
@@ -545,7 +648,7 @@
     var legend = document.createElement("div");
     legend.className = "chart-legend chart-legend--column";
     composition.forEach(function (d) {
-      var pct = (d.value / total) * 100;
+      var pct = total > 0 ? (d.value / total) * 100 : 0;
       var item = document.createElement("span");
       item.className = "chart-legend__item";
 
@@ -567,17 +670,324 @@
     container.appendChild(legend);
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    var barMount = document.getElementById("market-sizing-chart");
-    if (barMount) {
-      barMount.classList.add("chart-card");
-      renderBarChart(barMount);
+  // ---------- population bar (draggable count dividers) ----------
+
+  var TIER_COLOR_VAR = {
+    small: "--series-orange",
+    medium: "--series-magenta",
+    upper: "--series-green"
+  };
+
+  var popDiagram = { container: null };
+  var focusedPopDividerKey = null;
+
+  function renderPopulationBar(container) {
+    container.innerHTML = "";
+
+    var W = 640, plotLeft = 16, rightPad = 16;
+    var plotWidth = W - plotLeft - rightPad;
+    var rowH = 34, topPad = 26, bottomPad = 34;
+    var H = topPad + rowH + bottomPad;
+    var y = topPad;
+
+    var rows = compute().rows;
+
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + W + " " + H,
+      role: "img",
+      "aria-label":
+        "Draggable bar showing how the " + fmtCount(TOTAL_COUNT) + " agri-SMEs split " +
+        "across tiers: " + rows.map(function (r) {
+          return r.name + " " + fmtCount(r.count);
+        }).join(", ") + "."
+    });
+
+    var xCursor = plotLeft;
+    var narrowCount = 0;
+
+    rows.forEach(function (r, i) {
+      var w = Math.max((r.count / TOTAL_COUNT) * plotWidth, 0.01);
+      var isFirst = i === 0, isLast = i === rows.length - 1;
+      var rL = isFirst ? 4 : 0, rR = isLast ? 4 : 0;
+      var varName = TIER_COLOR_VAR[r.key];
+
+      var path = svgEl("path", {
+        d: roundedHBarPath(xCursor, y, w, rowH, rL, rR),
+        style: "fill:var(" + varName + ")"
+      });
+      svg.appendChild(path);
+
+      var countText = fmtCount(r.count);
+      if (w > 90) {
+        var lbl = svgEl("text", {
+          class: "level-seg-label", x: xCursor + w / 2, y: y + rowH / 2 - 4, "text-anchor": "middle"
+        });
+        lbl.textContent = r.name;
+        svg.appendChild(lbl);
+        var cnt = svgEl("text", {
+          class: "level-seg-pct", x: xCursor + w / 2, y: y + rowH / 2 + 11, "text-anchor": "middle"
+        });
+        cnt.textContent = countText;
+        svg.appendChild(cnt);
+      } else {
+        var segCenter = xCursor + w / 2;
+        var offset = 8 + narrowCount * 10;
+        var labelY = y + rowH + offset + 8;
+        var tickY1 = labelY - 6, tickY2 = y + rowH;
+        narrowCount++;
+
+        svg.appendChild(svgEl("line", {
+          class: "level-leader-line", x1: segCenter, x2: segCenter, y1: tickY1, y2: tickY2
+        }));
+        var leaderLbl = svgEl("text", {
+          class: "level-leader-label", x: segCenter, y: labelY, "text-anchor": "middle"
+        });
+        leaderLbl.textContent = r.name + " · " + countText;
+        svg.appendChild(leaderLbl);
+      }
+
+      if (!isLast) {
+        var nextW = Math.max((rows[i + 1].count / TOTAL_COUNT) * plotWidth, 0.01);
+        var sep = separatorThickness(w, nextW);
+        if (sep > 0) {
+          svg.appendChild(svgEl("rect", {
+            x: xCursor + w - sep / 2, y: y, width: sep, height: rowH,
+            style: "fill:var(--surface-1)"
+          }));
+        }
+      }
+
+      xCursor += w;
+    });
+
+    // Draggable dividers -- direct drag on the bar, plus arrow-key nudging
+    // when focused, following the same mechanics used on Closing the Gap:
+    // document-level pointer listeners (so dragging survives the full
+    // rebuild triggered on every move) and a pendingFocusEl handoff so
+    // keyboard focus isn't lost across that same rebuild.
+    var pendingFocusEl = null;
+
+    function countToX(count) {
+      return plotLeft + (count / TOTAL_COUNT) * plotWidth;
+    }
+    function xToCount(clientX) {
+      var currentSvg = container.querySelector("svg");
+      var rect = currentSvg.getBoundingClientRect();
+      var scale = W / rect.width;
+      var xUser = (clientX - rect.left) * scale;
+      return ((xUser - plotLeft) / plotWidth) * TOTAL_COUNT;
     }
 
-    var donutMount = document.getElementById("market-sizing-composition-chart");
-    if (donutMount) {
-      donutMount.classList.add("chart-card", "composition-row");
-      renderCompositionDonut(donutMount);
+    function addDivider(key, cumPos, min, max, onSet, ariaLabel) {
+      var x = countToX(cumPos);
+      var gripW = 10, gripH = rowH + 8;
+      svg.appendChild(svgEl("rect", {
+        class: "tacg-divider-grip",
+        x: x - gripW / 2, y: y - 4, width: gripW, height: gripH, rx: gripW / 2
+      }));
+
+      var hitW = 22;
+      var hit = svgEl("rect", {
+        class: "tacg-divider-hit",
+        x: x - hitW / 2, y: y - 8, width: hitW, height: rowH + 16,
+        tabindex: "0", role: "slider",
+        "aria-label": ariaLabel,
+        "aria-valuemin": String(Math.round(min)),
+        "aria-valuemax": String(Math.round(max)),
+        "aria-valuenow": String(Math.round(cumPos))
+      });
+
+      function applyCount(newCum) {
+        var clamped = Math.max(min, Math.min(max, newCum));
+        onSet(clamped);
+        focusedPopDividerKey = key;
+        refreshAll();
+      }
+
+      function onMove(evt) { applyCount(xToCount(evt.clientX)); }
+      function onUp() {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+      }
+      hit.addEventListener("pointerdown", function (evt) {
+        evt.preventDefault();
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
+      });
+
+      hit.addEventListener("keydown", function (evt) {
+        var step = evt.shiftKey ? 5000 : 1000;
+        if (evt.key === "ArrowLeft" || evt.key === "ArrowDown") {
+          evt.preventDefault();
+          applyCount(cumPos - step);
+        } else if (evt.key === "ArrowRight" || evt.key === "ArrowUp") {
+          evt.preventDefault();
+          applyCount(cumPos + step);
+        }
+      });
+
+      hit.addEventListener("focus", function () { focusedPopDividerKey = key; });
+      hit.addEventListener("blur", function () {
+        if (focusedPopDividerKey === key) focusedPopDividerKey = null;
+      });
+
+      svg.appendChild(hit);
+      if (focusedPopDividerKey === key) pendingFocusEl = hit;
     }
+
+    var small = state.segments[0], medium = state.segments[1], upper = state.segments[2];
+    var cum1 = small.count;
+    var cum2 = small.count + medium.count;
+
+    addDivider(
+      "pop-divider-1", cum1, 0, cum2,
+      function (newCum1) {
+        small.count = newCum1;
+        medium.count = cum2 - newCum1;
+      },
+      "Boundary between Small and Medium SME counts, draggable. Currently " +
+        fmtCount(small.count) + " small, " + fmtCount(medium.count) + " medium."
+    );
+
+    addDivider(
+      "pop-divider-2", cum2, cum1, TOTAL_COUNT,
+      function (newCum2) {
+        medium.count = newCum2 - cum1;
+        upper.count = TOTAL_COUNT - newCum2;
+      },
+      "Boundary between Medium and Upper SME counts, draggable. Currently " +
+        fmtCount(medium.count) + " medium, " + fmtCount(upper.count) + " upper."
+    );
+
+    var svgWrap = document.createElement("div");
+    svgWrap.className = "chart-svg-wrap";
+    svgWrap.appendChild(svg);
+    container.appendChild(svgWrap);
+    if (pendingFocusEl) pendingFocusEl.focus({ preventScroll: true });
+  }
+
+  // ---------- avg transaction size sliders (independent per segment) ----------
+
+  function buildAvgSizeSlider(parent, seg) {
+    var range = AVG_SIZE_RANGE[seg.key];
+
+    var row = document.createElement("div");
+    row.className = "ms-slider-row";
+
+    var head = document.createElement("div");
+    head.className = "ms-slider-row__head";
+    var span = document.createElement("span");
+    span.textContent = seg.name + " — avg. transaction size";
+    var strong = document.createElement("strong");
+    strong.textContent = fmtMoney(seg.avgSize);
+    head.appendChild(span);
+    head.appendChild(strong);
+    row.appendChild(head);
+
+    var input = document.createElement("input");
+    input.type = "range";
+    input.min = String(range.min);
+    input.max = String(range.max);
+    input.step = String(range.step);
+    input.value = String(seg.avgSize);
+    input.setAttribute("aria-label", seg.name + " average transaction size");
+    input.addEventListener("input", function () {
+      var v = Number(input.value);
+      seg.avgSize = v;
+      strong.textContent = fmtMoney(v);
+      refreshAll();
+    });
+    row.appendChild(input);
+
+    parent.appendChild(row);
+  }
+
+  function renderAvgSizeSliders(container) {
+    container.innerHTML = "";
+    state.segments.forEach(function (seg) {
+      buildAvgSizeSlider(container, seg);
+    });
+  }
+
+  // ---------- table + comparison note + composition heading ----------
+
+  function updateTable() {
+    var c = compute();
+    c.rows.forEach(function (r) {
+      setText("ms-" + r.key + "-count", fmtCount(r.count));
+      setText("ms-" + r.key + "-avg", fmtMoney(r.avgSize));
+      setText("ms-" + r.key + "-total", fmtB(r.total));
+      setText("ms-" + r.key + "-gap", fmtB(r.gap));
+      setText("ms-" + r.key + "-pctmet", "~" + Math.round(r.pctMet) + "%");
+    });
+    setText("ms-total-count", fmtCount(c.totalCount));
+    setText("ms-total-avg", "~" + fmtMoney(c.totalAvg));
+    setText("ms-total-total", "~" + fmtB(c.totalDemand));
+    setText("ms-total-gap", "~" + fmtB(c.totalGap));
+    setText("ms-total-pctmet", "~" + Math.round(c.totalPctMet) + "%");
+  }
+
+  function updateComparisonNote() {
+    var el = document.getElementById("ms-comparison-note");
+    if (!el) return;
+
+    var c = compute();
+    var diff = c.totalDemand - REPORTED_TOTAL_DEMAND_B;
+    var diffPct = (diff / REPORTED_TOTAL_DEMAND_B) * 100;
+    var note;
+
+    if (Math.abs(diffPct) < 1) {
+      note = "Your current assumptions imply " + fmtB(c.totalDemand) +
+        " in total demand — on target with the report's ~$88.1B figure " +
+        "(the small remaining gap is normal rounding, the same gap the table " +
+        "shows at its default values).";
+    } else {
+      var dir = diff > 0 ? "above" : "below";
+      note = "Your current assumptions imply " + fmtB(c.totalDemand) +
+        " in total demand, " + fmtB(Math.abs(diff)) + " (" + Math.abs(diffPct).toFixed(0) + "%) " +
+        dir + " the report's ~$88.1B figure.";
+    }
+    note += " Based on demand assumptions only — supply-side modeling not yet reflected.";
+    el.textContent = note;
+  }
+
+  function updateCompositionHeading() {
+    setText("ms-composition-total", fmtB(compute().totalDemand));
+  }
+
+  function refreshAll() {
+    if (popDiagram.container) renderPopulationBar(popDiagram.container);
+
+    var barMount = document.getElementById("market-sizing-chart");
+    if (barMount) renderBarChart(barMount);
+
+    var donutMount = document.getElementById("market-sizing-composition-chart");
+    if (donutMount) renderCompositionDonut(donutMount);
+
+    updateTable();
+    updateComparisonNote();
+    updateCompositionHeading();
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var popMount = document.getElementById("ms-population-bar");
+    if (popMount) {
+      popMount.classList.add("chart-card", "level-diagram");
+      popDiagram.container = popMount;
+    }
+
+    var sliderMount = document.getElementById("ms-avgsize-controls");
+    if (sliderMount) {
+      sliderMount.classList.add("ms-controls");
+      renderAvgSizeSliders(sliderMount);
+    }
+
+    var barMount = document.getElementById("market-sizing-chart");
+    if (barMount) barMount.classList.add("chart-card");
+
+    var donutMount = document.getElementById("market-sizing-composition-chart");
+    if (donutMount) donutMount.classList.add("chart-card", "composition-row");
+
+    refreshAll();
   });
 })();

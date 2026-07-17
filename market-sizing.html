@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Market Sizing — Ag Finance Overview</title>
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=4">
 </head>
 <body>
 
@@ -78,15 +78,33 @@
       shape of the gap concrete by firm tier, we built an illustrative
       segmentation below. It is our own modeling, not data from the report —
       treat it as a way to think about the market's structure, not a
-      precise measurement.
+      precise measurement. You can adjust segment sizes and average
+      transaction sizes below — everything from the composition chart down
+      to the comparison note recomputes live from your changes.
     </p>
+
+    <h3 class="chart-title">Segment sizes (# of SMEs)</h3>
+    <p>
+      The report doesn't break its ~130,000 agri-SMEs into size tiers —
+      that split is our own illustrative modeling, same as the rest of this
+      section. Drag a divider below to move SMEs between the two tiers on
+      either side of it; the total stays fixed at 130,000.
+    </p>
+    <div id="ms-population-bar" aria-label="Draggable bar showing the illustrative split of agri-SMEs across Small, Medium, and Upper tiers"></div>
+
+    <h3 class="chart-title">Average transaction size per tier</h3>
+    <p>
+      Each tier's typical financing need — adjustable independently; moving
+      one doesn't affect the others.
+    </p>
+    <div id="ms-avgsize-controls"></div>
 
     <p class="section-transition">
-      Zooming out first, here's the total picture — the composition of that
-      ~$88.4B before we break it down tier by tier.
+      Zooming out first, here's the total picture — the composition of
+      total demand before we break it down tier by tier.
     </p>
 
-    <h3 class="chart-title">Composition of total demand (~$88.4B)</h3>
+    <h3 class="chart-title">Composition of total demand (~<span id="ms-composition-total">$88.4B</span>)</h3>
     <div id="market-sizing-composition-chart"></div>
 
     <p class="section-transition">
@@ -125,51 +143,58 @@
         <tbody>
           <tr>
             <td>Small SME</td>
-            <td>78,000</td>
-            <td>$150K</td>
-            <td>$11.7B</td>
+            <td id="ms-small-count">78,000</td>
+            <td id="ms-small-avg">$150K</td>
+            <td id="ms-small-total">$11.7B</td>
             <td>$0.1B</td>
             <td>$0.4B</td>
             <td>$0.5B</td>
-            <td>$11.2B</td>
-            <td>~4%</td>
+            <td id="ms-small-gap">$11.2B</td>
+            <td id="ms-small-pctmet">~4%</td>
           </tr>
           <tr>
             <td>Medium SME</td>
-            <td>39,000</td>
-            <td>$500K</td>
-            <td>$19.5B</td>
+            <td id="ms-medium-count">39,000</td>
+            <td id="ms-medium-avg">$500K</td>
+            <td id="ms-medium-total">$19.5B</td>
             <td>$1.4B</td>
             <td>$1.6B</td>
             <td>$3.0B</td>
-            <td>$16.5B</td>
-            <td>~15%</td>
+            <td id="ms-medium-gap">$16.5B</td>
+            <td id="ms-medium-pctmet">~15%</td>
           </tr>
           <tr>
             <td>Upper SME</td>
-            <td>13,000</td>
-            <td>$4.4M</td>
-            <td>$57.2B</td>
+            <td id="ms-upper-count">13,000</td>
+            <td id="ms-upper-avg">$4.4M</td>
+            <td id="ms-upper-total">$57.2B</td>
             <td>$9.5B</td>
             <td>$1.0B</td>
             <td>$10.5B</td>
-            <td>$46.7B</td>
-            <td>~18%</td>
+            <td id="ms-upper-gap">$46.7B</td>
+            <td id="ms-upper-pctmet">~18%</td>
           </tr>
           <tr class="total-row">
             <td>Total</td>
-            <td>130,000</td>
-            <td>~$680K</td>
-            <td>~$88.4B</td>
+            <td id="ms-total-count">130,000</td>
+            <td id="ms-total-avg">~$680K</td>
+            <td id="ms-total-total">~$88.4B</td>
             <td>$11.0B</td>
             <td>$3.0B</td>
             <td>$14.0B</td>
-            <td>~$74.4B</td>
-            <td>~16%</td>
+            <td id="ms-total-gap">~$74.4B</td>
+            <td id="ms-total-pctmet">~16%</td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <p class="callout-note" id="ms-comparison-note">
+      Your current assumptions imply ~$88.4B in total demand — on target
+      with the report's ~$88.1B figure (the small remaining gap is normal
+      rounding, the same gap the table shows at its default values). Based
+      on demand assumptions only — supply-side modeling not yet reflected.
+    </p>
 
     <details class="modeling-notes">
       <summary>Modeling notes &amp; assumptions</summary>
@@ -199,6 +224,12 @@
           investment funds assumed capital-constrained overall but reach
           further down-market proportionally.
         </li>
+        <li>
+          The segment-size and average-transaction-size controls above only
+          adjust demand. Bank supply, fund supply, and their totals are held
+          fixed in this build — supply-side interactivity (e.g. reweighting
+          banks vs. funds by tier) is planned as a later phase.
+        </li>
       </ul>
     </details>
   </section>
@@ -208,6 +239,6 @@
   <p>Ag Finance Overview is a resource for development staff without a finance background.</p>
 </footer>
 
-<script src="assets/js/market-sizing-chart.js"></script>
+<script src="assets/js/market-sizing-chart.js?v=2"></script>
 </body>
 </html>
