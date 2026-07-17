@@ -946,6 +946,15 @@
       note = "Your current assumptions imply " + fmtB(c.totalDemand) +
         " in total demand, " + fmtB(Math.abs(diff)) + " (" + Math.abs(diffPct).toFixed(0) + "%) " +
         dir + " the report's ~$88.1B figure.";
+
+      // A uniform adjustment across all three avg-size sliders, rather than
+      // pointing at one tier -- population split and avg size could each
+      // independently close the gap, so this avoids implying any one tier's
+      // assumption is "more wrong" than another's.
+      var adjustmentPct = (REPORTED_TOTAL_DEMAND_B / c.totalDemand - 1) * 100;
+      var verb = adjustmentPct < 0 ? "Reducing" : "Increasing";
+      note += " " + verb + " all three average transaction sizes by about " +
+        Math.round(Math.abs(adjustmentPct)) + "% would bring the total back in line.";
     }
     note += " Based on demand assumptions only — supply-side modeling not yet reflected.";
     el.textContent = note;
