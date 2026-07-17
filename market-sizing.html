@@ -79,25 +79,10 @@
       segmentation below. It is our own modeling, not data from the report —
       treat it as a way to think about the market's structure, not a
       precise measurement. You can adjust segment sizes and average
-      transaction sizes below — everything from the composition chart down
-      to the comparison note recomputes live from your changes.
+      transaction sizes further down the page — the composition chart,
+      stacked chart, table, and comparison note all recompute live from
+      your changes.
     </p>
-
-    <h3 class="chart-title">Segment sizes (# of SMEs)</h3>
-    <p>
-      The report doesn't break its ~130,000 agri-SMEs into size tiers —
-      that split is our own illustrative modeling, same as the rest of this
-      section. Drag a divider below to move SMEs between the two tiers on
-      either side of it; the total stays fixed at 130,000.
-    </p>
-    <div id="ms-population-bar" aria-label="Draggable bar showing the illustrative split of agri-SMEs across Small, Medium, and Upper tiers"></div>
-
-    <h3 class="chart-title">Average transaction size per tier</h3>
-    <p>
-      Each tier's typical financing need — adjustable independently; moving
-      one doesn't affect the others.
-    </p>
-    <div id="ms-avgsize-controls"></div>
 
     <p class="section-transition">
       Zooming out first, here's the total picture — the composition of
@@ -188,6 +173,12 @@
         </tbody>
       </table>
     </div>
+
+    <h3 class="chart-title">Segment sizes (# of SMEs)</h3>
+    <div id="ms-population-bar" aria-label="Draggable bar showing the illustrative split of agri-SMEs across Small, Medium, and Upper tiers"></div>
+
+    <h3 class="chart-title">Average transaction size per tier</h3>
+    <div id="ms-avgsize-controls"></div>
 
     <p class="callout-note" id="ms-comparison-note">
       Your current assumptions imply ~$88.4B in total demand — on target
