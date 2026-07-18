@@ -27,10 +27,13 @@
   var DEMAND_PCT_MIN = 30, DEMAND_PCT_MAX = 80;
 
   // Report-sourced total gap (rounded, matches the $74B figure used
-  // elsewhere on this page and in Market Sizing) — used only to give the
-  // demand/supply row a concrete dollar readout alongside its illustrative
-  // percentage split. The split itself is still illustrative; only the
-  // total being split is report-sourced.
+  // elsewhere on this page and in Market Sizing) — used to give the two
+  // draggable-divider rows (demand/supply, grants/repayable) a concrete
+  // dollar readout alongside their illustrative percentage split. Every
+  // seg.value in compute()'s output is already expressed as a share of
+  // this same full-gap scale (that's why grants+repayable sum to 100 just
+  // like demand+supply do), so no extra rescaling is needed per row —
+  // only the total being split is report-sourced, not the split itself.
   var GAP_TOTAL_USD_B = 74;
 
   function usdBFromPct(pct) {
@@ -132,8 +135,8 @@
       return {
         title: "Grants vs. repayable capital",
         segs: [
-          { label: "Grants", value: d.grants, varName: "--series-orange" },
-          { label: "Repayable capital", value: d.repayable, varName: "--series-green" }
+          { label: "Grants", value: d.grants, varName: "--series-orange", usd: usdBFromPct(d.grants) },
+          { label: "Repayable capital", value: d.repayable, varName: "--series-green", usd: usdBFromPct(d.repayable) }
         ]
       };
     },
@@ -577,7 +580,8 @@
             : 0;
         },
         "Grants share of the response, draggable. Currently " + Math.round(d.grants) +
-          "% grants, " + Math.round(d.repayable) + "% repayable capital."
+          "% grants (" + usdBFromPct(d.grants) + "), " + Math.round(d.repayable) +
+          "% repayable capital (" + usdBFromPct(d.repayable) + ")."
       );
     }
 
@@ -630,6 +634,20 @@
     btn.textContent = (active ? "✓ " : "") + label;
   }
 
+  // Populated once the per-level pills are built, so "Show all"/"Hide all"
+  // can update every pill's UI in one pass instead of re-deriving it from
+  // the DOM.
+  var levelToggleButtons = {};
+
+  function setAllLevels(active) {
+    diagram.activeLevels = active ? ALL_LEVELS.slice() : [];
+    ALL_LEVELS.forEach(function (levelKey) {
+      var btn = levelToggleButtons[levelKey];
+      if (btn) setToggleUI(btn, active, LEVEL_TITLES[levelKey]);
+    });
+    rerenderDiagram();
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     // One diagram DOM node, mounted once in a fixed spot near the top of
     // the page -- never relocated, never recreated.
@@ -658,8 +676,15 @@
           setToggleUI(btn, !isActive, LEVEL_TITLES[levelKey]);
           setLevelActive(levelKey, !isActive);
         });
+        levelToggleButtons[levelKey] = btn;
         toggleGroup.appendChild(btn);
       });
     }
+
+    var showAllBtn = document.getElementById("tacg-show-all");
+    if (showAllBtn) showAllBtn.addEventListener("click", function () { setAllLevels(true); });
+
+    var hideAllBtn = document.getElementById("tacg-hide-all");
+    if (hideAllBtn) hideAllBtn.addEventListener("click", function () { setAllLevels(false); });
   });
 })();

@@ -530,6 +530,20 @@ table.data-table {
   color: var(--text-secondary);
 }
 
+.tacg-toggle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.7rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.tacg-toggle--action {
+  border-style: dashed;
+  color: var(--text-secondary);
+}
+
 .tacg-toggle-group {
   display: flex;
   flex-wrap: wrap;
