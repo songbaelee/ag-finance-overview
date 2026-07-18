@@ -820,12 +820,6 @@ table.data-table {
   margin: 1.25rem 0 2rem;
 }
 
-.cp-tree .cp-node--root {
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 0.15rem 0 0.5rem;
-}
-
 .cp-branch {
   list-style: none;
   margin: 0;
