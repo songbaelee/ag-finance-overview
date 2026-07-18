@@ -1,4 +1,4 @@
-/* Capital Providers guided quiz -- a linear, typeform-style walk through
+/* The Landscape guided quiz -- a linear, typeform-style walk through
    the same demand/supply -> ... -> leaf tree shown statically below on
    the page. Question/leaf structure lives in QUIZ_TREE; leaf content is
    never duplicated here -- the landing screen clones the matching
