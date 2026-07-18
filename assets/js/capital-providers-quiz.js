@@ -154,15 +154,42 @@
     renderRestartLink(root);
   }
 
-  // Landing screen (leaf cards, cross-refs, jump-to-map) lands in a
-  // later commit -- this placeholder just confirms the tree traversal
-  // reaches the right leaf id, so question-flow wiring can be verified
-  // on its own before the landing screen is built on top of it.
+  // Strips id attributes from a cloned subtree so cloning a static
+  // .cp-archetype card into the quiz landing screen never creates a
+  // second element sharing an id with its static-section original --
+  // the static section's own in-page cross-reference links (e.g.
+  // #cp-fasa) must keep resolving to that original, not to a clone that
+  // happens to render earlier in the document.
+  function stripIds(node) {
+    node.removeAttribute("id");
+    var withIds = node.querySelectorAll("[id]");
+    for (var i = 0; i < withIds.length; i++) withIds[i].removeAttribute("id");
+    return node;
+  }
+
+  // Leaf cards are never retyped here -- each card is a live clone of
+  // the matching .cp-archetype element(s) already in the static tree
+  // below, org name/description/cross-ref included verbatim, so the two
+  // views of the map can't drift out of sync with each other.
   function renderLanding(leafId) {
     clear(root);
     renderBreadcrumb(root);
-    root.appendChild(el("p", { class: "cp-quiz__copy" }, ["Reached: " + leafId]));
-    renderRestartLink(root);
+
+    var leafSource = document.getElementById(leafId);
+    var cardsWrap = el("div", { class: "cp-quiz__landing-cards" });
+    if (leafSource) {
+      var cards = leafSource.querySelectorAll(".cp-archetype");
+      for (var i = 0; i < cards.length; i++) {
+        cardsWrap.appendChild(stripIds(cards[i].cloneNode(true)));
+      }
+    }
+    root.appendChild(cardsWrap);
+
+    var actions = el("div", { class: "cp-quiz__actions" });
+    var againBtn = el("button", { type: "button", class: "cp-quiz-btn" }, ["Explore another path"]);
+    againBtn.addEventListener("click", renderIntro);
+    actions.appendChild(againBtn);
+    root.appendChild(actions);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
