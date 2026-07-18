@@ -26,6 +26,17 @@
 
   var DEMAND_PCT_MIN = 30, DEMAND_PCT_MAX = 80;
 
+  // Report-sourced total gap (rounded, matches the $74B figure used
+  // elsewhere on this page and in Market Sizing) — used only to give the
+  // demand/supply row a concrete dollar readout alongside its illustrative
+  // percentage split. The split itself is still illustrative; only the
+  // total being split is report-sourced.
+  var GAP_TOTAL_USD_B = 74;
+
+  function usdBFromPct(pct) {
+    return "~$" + Math.round(pct / 100 * GAP_TOTAL_USD_B) + "B";
+  }
+
   // Fixed illustrative constants — not addressable's share no longer has
   // its own control (see grantPctOfPermanent above for the one dial that
   // replaced it); everything below recomputes proportionally.
@@ -92,8 +103,8 @@
       return {
         title: "Demand vs. supply",
         segs: [
-          { label: "Demand side", value: d.demand, varName: "--series-bank" },
-          { label: "Supply side", value: d.supply, varName: "--series-fund" }
+          { label: "Demand side", value: d.demand, varName: "--series-bank", usd: usdBFromPct(d.demand) },
+          { label: "Supply side", value: d.supply, varName: "--series-fund", usd: usdBFromPct(d.supply) }
         ]
       };
     },
@@ -248,7 +259,7 @@
     label.textContent = seg.label + (seg.muted ? " (not broken out at this level)" : "");
     row.appendChild(label);
     var val = document.createElement("strong");
-    val.textContent = Math.round(seg.value) + "% of gap";
+    val.textContent = Math.round(seg.value) + "% of gap" + (seg.usd ? " (" + seg.usd + ")" : "");
     row.appendChild(val);
     tip.appendChild(row);
   }
@@ -398,7 +409,7 @@
             class: "level-seg-pct", x: xCursor + w / 2, y: y + rowH / 2 + 10, "text-anchor": "middle",
             style: "fill:" + segTextFill(seg.varName, true) + ";font-family:" + FONT_STACK + ";font-size:10px"
           });
-          pct.textContent = Math.round(seg.value) + "%";
+          pct.textContent = Math.round(seg.value) + "%" + (seg.usd ? " (" + seg.usd + ")" : "");
           svg.appendChild(pct);
         } else if (!seg.muted) {
           // Active but too narrow to hold its own label -- a leader line
@@ -421,7 +432,8 @@
             class: "level-leader-label", x: segCenter, y: labelY, "text-anchor": "middle",
             style: "fill:" + cssVar("--text-primary") + ";font-family:" + FONT_STACK + ";font-size:10px;font-weight:600"
           });
-          leaderLbl.textContent = seg.label + " · " + Math.round(seg.value) + "%";
+          leaderLbl.textContent = seg.label + " · " + Math.round(seg.value) + "%" +
+            (seg.usd ? " (" + seg.usd + ")" : "");
           svg.appendChild(leaderLbl);
         }
 
@@ -430,6 +442,7 @@
           style: "fill:transparent;cursor:pointer",
           tabindex: "0", role: "button",
           "aria-label": row.def.title + ": " + seg.label + ", " + Math.round(seg.value) + "% of the total gap" +
+            (seg.usd ? " (" + seg.usd + ")" : "") +
             (seg.muted ? " (not broken out at this level)" : "")
         });
 
@@ -546,7 +559,8 @@
       function () { return state.demandPct; },
       function (pct) { state.demandPct = Math.max(DEMAND_PCT_MIN, Math.min(DEMAND_PCT_MAX, pct)); },
       "Demand share of the gap, draggable. Currently " + Math.round(d.demand) +
-        "% demand, " + Math.round(d.supply) + "% supply."
+        "% demand (" + usdBFromPct(d.demand) + "), " + Math.round(d.supply) +
+        "% supply (" + usdBFromPct(d.supply) + ")."
     );
 
     if (opts.showGrantsGuide && grantsHandleY !== null) {
