@@ -392,26 +392,52 @@
       var narrowActiveCount = 0;
       var isFirstRow = i === 0;
 
+      // Each segment's x/width, precomputed once so the muted-run pass
+      // below and the main per-segment pass agree on exact positions.
+      var segWidths = segs.map(function (seg) {
+        return Math.max((seg.value / 100) * plotWidth, 0.01);
+      });
+      var segX = [];
+      (function () {
+        var c = plotLeft;
+        segWidths.forEach(function (w) { segX.push(c); c += w; });
+      })();
+
+      // Muted segments are context from a different scope than what this
+      // row subdivides (e.g. the supply side, on a row that only breaks
+      // down TA), or a segment that already got its full presentation in
+      // an earlier row (e.g. "not addressable"). They render as a dashed
+      // outline with no fill and no label, so they read as inactive
+      // backdrop rather than a repeat of an actual split. A *run* of
+      // consecutive muted segments is drawn as a single dashed box rather
+      // than one box per segment -- otherwise the seam between two muted
+      // segments would misleadingly read as an extra boundary this row is
+      // displaying, when it's really just adjacent leftover context.
+      for (var runStart = 0; runStart < segs.length; runStart++) {
+        if (!segs[runStart].muted) continue;
+        var runEnd = runStart;
+        while (runEnd + 1 < segs.length && segs[runEnd + 1].muted) runEnd++;
+        var runX = segX[runStart];
+        var runW = segX[runEnd] + segWidths[runEnd] - runX;
+        svg.appendChild(svgEl("path", {
+          class: "level-seg-muted",
+          d: roundedHBarPath(runX, y, runW, rowH, runStart === 0 ? 4 : 0, runEnd === segs.length - 1 ? 4 : 0),
+          style: "fill:none;stroke:" + cssVar("--text-muted") + ";stroke-width:1.25;stroke-dasharray:4 3"
+        }));
+        runStart = runEnd;
+      }
+
       segs.forEach(function (seg, si) {
-        var w = Math.max((seg.value / 100) * plotWidth, 0.01);
+        var w = segWidths[si];
         var isFirst = si === 0, isLast = si === segs.length - 1;
         var rL = isFirst ? 4 : 0, rR = isLast ? 4 : 0;
 
-        // Muted segments are context from a different scope than what this
-        // row subdivides (e.g. the supply side, on a row that only breaks
-        // down TA), or a segment that already got its full presentation in
-        // an earlier row (e.g. "not addressable"). Either way they render
-        // as a dashed outline with no fill and no label, so they read as
-        // inactive backdrop rather than a repeat of an actual split.
-        var pathAttrs = {
-          d: roundedHBarPath(xCursor, y, w, rowH, rL, rR),
-          style: seg.muted
-            ? "fill:none;stroke:" + cssVar("--text-muted") + ";stroke-width:1.25;stroke-dasharray:4 3"
-            : "fill:" + cssVar(seg.varName)
-        };
-        if (seg.muted) pathAttrs.class = "level-seg-muted";
-        var path = svgEl("path", pathAttrs);
-        svg.appendChild(path);
+        if (!seg.muted) {
+          svg.appendChild(svgEl("path", {
+            d: roundedHBarPath(xCursor, y, w, rowH, rL, rR),
+            style: "fill:" + cssVar(seg.varName)
+          }));
+        }
 
         if (!seg.muted && w > 78) {
           var lbl = svgEl("text", {
@@ -482,8 +508,7 @@
         svg.appendChild(hit);
 
         if (!isLast && !seg.muted && !segs[si + 1].muted) {
-          var nextW = Math.max((segs[si + 1].value / 100) * plotWidth, 0.01);
-          var sep = separatorThickness(w, nextW);
+          var sep = separatorThickness(w, segWidths[si + 1]);
           if (sep > 0) {
             svg.appendChild(svgEl("rect", {
               x: xCursor + w - sep / 2, y: y, width: sep, height: rowH,
