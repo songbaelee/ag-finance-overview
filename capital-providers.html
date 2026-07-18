@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Capital Providers — Ag Finance Overview</title>
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=5">
 </head>
 <body>
 
@@ -27,11 +27,300 @@
 <main>
   <h1 class="page-title">Capital Providers</h1>
   <p class="page-intro">
-    Who actually supplies agri-SME finance — commercial banks, investment
-    funds, DFIs, guarantee schemes, and others — and how their roles differ.
+    Who actually supplies the capital that reaches agri-SMEs today? This
+    page maps the landscape by approach — demand side vs. supply side — and
+    names real organizations as examples of each.
   </p>
 
-  <p class="placeholder-note">Content for this section is coming soon.</p>
+  <p class="source-line">
+    Figures below are restated from <a href="market-sizing.html">Market
+    Sizing</a> — see that page for the full report citation and breakdown.
+  </p>
+
+  <section class="section-report">
+    <h2 class="section-heading">Recap: the gap this page is about</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-value">$74B</span>
+        <span class="stat-label">Annual financing gap</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">~$14B</span>
+        <span class="stat-label">Formal supply currently met</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">~16%</span>
+        <span class="stat-label">Share of demand met</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-illustrative">
+    <h2 class="section-heading">
+      Approaches &amp; named examples
+      <span class="badge-illustrative">Illustrative</span>
+    </h2>
+    <p class="illustrative-note">
+      The categorization below is our own — the market-sizing report
+      doesn't segment supply this way. Named organizations are real,
+      illustrative examples of each approach, not an exhaustive list or a
+      claim about market share. This is a first pass: structure only, no
+      drag or toggle interactivity yet, and descriptions are kept
+      deliberately minimal.
+    </p>
+
+    <h3 class="chart-title">Demand side</h3>
+    <div class="cp-tree">
+      <div class="cp-node cp-node--root">
+        Demand side <span class="cp-node__note">(assume: grants only)</span>
+      </div>
+      <ul class="cp-branch">
+        <li>
+          <div class="cp-node cp-node--leaf">
+            <div class="cp-node__label">
+              Farmer level <span class="cp-node__note">(agricultural extension)</span>
+            </div>
+            <div class="cp-archetype">
+              <div class="cp-archetype__org">One Acre Fund</div>
+              <p class="cp-archetype__desc">
+                Delivers bundled inputs, credit, and training directly to
+                smallholder farmers — grant-funded technical assistance at
+                the farmer level.
+              </p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="cp-node cp-node--leaf">
+            <div class="cp-node__label">Firm level</div>
+            <div class="cp-archetype" id="cp-agri-frontier-demand">
+              <div class="cp-archetype__org">Agri Frontier</div>
+              <p class="cp-archetype__desc">
+                Advisory support aimed at the agribusiness firm itself —
+                helping build the systems and track record a firm needs to
+                become financeable.
+              </p>
+              <p class="cp-archetype__xref">
+                Also appears under Supply side → Donor-directed →
+                <a href="#cp-agri-frontier-donor">More control</a>, in its
+                advisory-arm capacity, and is reportedly building its own
+                fund — see <a href="#cp-fasa">FASA</a> under Supply side →
+                Funds → Grant.
+              </p>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <h3 class="chart-title">Supply side</h3>
+    <div class="cp-tree">
+      <div class="cp-node cp-node--root">Supply side</div>
+      <ul class="cp-branch">
+        <li>
+          <div class="cp-node cp-node--branch">Banks</div>
+          <ul class="cp-branch">
+            <li>
+              <div class="cp-node cp-node--leaf">
+                <div class="cp-node__label">Guarantee</div>
+                <div class="cp-archetype">
+                  <div class="cp-archetype__org">DFC</div>
+                  <p class="cp-archetype__desc">
+                    U.S. International Development Finance Corporation —
+                    issues guarantees that reduce the risk banks take on
+                    when lending to agribusiness borrowers.
+                  </p>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="cp-node cp-node--leaf">
+                <div class="cp-node__label">Grant-to-incentivize</div>
+                <div class="cp-archetype">
+                  <div class="cp-archetype__org">Aceli</div>
+                  <p class="cp-archetype__desc">
+                    Pays lenders performance-based incentives to make more
+                    (and better-priced) loans to agri-SMEs, rather than
+                    guaranteeing the loans directly.
+                  </p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div class="cp-node cp-node--branch">Funds</div>
+          <ul class="cp-branch">
+            <li>
+              <div class="cp-node cp-node--leaf">
+                <div class="cp-node__label">Grant</div>
+                <div class="cp-archetype" id="cp-fasa">
+                  <div class="cp-archetype__org">FASA</div>
+                  <p class="cp-archetype__desc">
+                    A fund that channels grant capital toward expanding
+                    agri-SME lending, rather than lending its own
+                    repayable capital.
+                  </p>
+                  <p class="cp-archetype__xref">
+                    Managed by I&amp;P, whose advisory arm resembles
+                    <a href="#cp-agri-frontier-demand">Agri Frontier's</a>
+                    work. <a href="#cp-n3f">N3F</a>, one of the donor
+                    entities behind vehicles like this one, is listed
+                    separately under Supply side → Donor-directed → Less
+                    control.
+                  </p>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="cp-node cp-node--branch">Repayable</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-node cp-node--leaf">
+                    <div class="cp-node__label">SME-specialist</div>
+                    <div class="cp-archetype">
+                      <div class="cp-archetype__org">Balloon</div>
+                      <p class="cp-archetype__desc">
+                        Invests in small and growing businesses broadly —
+                        agriculture is one sector among several, not an
+                        agriculture-only mandate.
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="cp-node cp-node--branch">Agri-specialist</div>
+                  <ul class="cp-branch">
+                    <li>
+                      <div class="cp-node cp-node--leaf">
+                        <div class="cp-node__label">Local</div>
+                        <div class="cp-archetype">
+                          <div class="cp-archetype__org">Pearl Capital Partners</div>
+                          <p class="cp-archetype__desc">
+                            An Africa-based fund manager investing
+                            specifically in agribusiness SMEs across the
+                            region.
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="cp-node cp-node--branch">International</div>
+                      <ul class="cp-branch">
+                        <li>
+                          <div class="cp-node cp-node--leaf">
+                            <div class="cp-node__label">Lending-focus</div>
+                            <div class="cp-archetype">
+                              <div class="cp-archetype__org">SIDI</div>
+                              <p class="cp-archetype__desc">
+                                An international solidarity-finance
+                                investor providing debt to agricultural
+                                and rural enterprises.
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="cp-node cp-node--leaf">
+                            <div class="cp-node__label">TA-focus</div>
+                            <div class="cp-archetype">
+                              <div class="cp-archetype__org">Root Capital</div>
+                              <p class="cp-archetype__desc">
+                                Pairs lending to agricultural enterprises
+                                with substantial technical assistance,
+                                rather than capital alone.
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <div class="cp-node cp-node--branch">
+            Donor-directed
+            <span class="cp-node__note">(ordered by control retained, most → least)</span>
+          </div>
+          <ul class="cp-branch">
+            <li>
+              <div class="cp-node cp-node--leaf">
+                <div class="cp-node__label">Most control</div>
+                <div class="cp-archetype">
+                  <div class="cp-archetype__org">
+                    Isidro <span class="cp-node__note">(balance-sheet lending)</span>
+                  </div>
+                  <p class="cp-archetype__desc">
+                    Lends directly from its own balance sheet — the
+                    donor-directed structure that retains the most direct
+                    control over capital deployment.
+                  </p>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="cp-node cp-node--leaf">
+                <div class="cp-node__label">More control</div>
+                <div class="cp-archetype">
+                  <div class="cp-archetype__org">Daraja</div>
+                  <p class="cp-archetype__desc">
+                    A donor-directed vehicle retaining more control over
+                    deployment than a hands-off fund, less than direct
+                    balance-sheet lending.
+                  </p>
+                </div>
+                <div class="cp-archetype" id="cp-agri-frontier-donor">
+                  <div class="cp-archetype__org">
+                    Agri Frontier <span class="cp-node__note">(advisory side)</span>
+                  </div>
+                  <p class="cp-archetype__desc">
+                    The same organization listed under Demand side → Firm
+                    level, here in its advisory-arm role rather than as a
+                    firm-level TA provider.
+                  </p>
+                  <p class="cp-archetype__xref">
+                    See <a href="#cp-agri-frontier-demand">Firm level</a>
+                    above.
+                  </p>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="cp-node cp-node--leaf">
+                <div class="cp-node__label">Less control, narrow strategy</div>
+                <div class="cp-archetype" id="cp-n3f">
+                  <div class="cp-archetype__org">N3F</div>
+                  <p class="cp-archetype__desc">
+                    A donor-directed vehicle aimed at a narrow, defined
+                    strategy rather than close control of individual
+                    deals.
+                  </p>
+                  <p class="cp-archetype__xref">
+                    Also referenced under Supply side → Funds →
+                    <a href="#cp-fasa">Grant</a>, as one of the donor
+                    entities behind grant-funded vehicles like FASA.
+                  </p>
+                </div>
+                <div class="cp-archetype">
+                  <div class="cp-archetype__org">
+                    One Acre Ventures <span class="cp-node__note">(JV with IDH)</span>
+                  </div>
+                  <p class="cp-archetype__desc">
+                    A joint venture pursuing a defined strategy rather
+                    than direct deal-by-deal control.
+                  </p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer">

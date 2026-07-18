@@ -812,6 +812,98 @@ table.data-table {
   margin: 0;
 }
 
+/* ---------- capital providers: box/branch tree (not proportional --
+   deliberately plain nested boxes, distinct from the Closing the Gap
+   stacked-bar diagrams) ---------- */
+
+.cp-tree {
+  margin: 1.25rem 0 2rem;
+}
+
+.cp-tree .cp-node--root {
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.15rem 0 0.5rem;
+}
+
+.cp-branch {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  border-left: 1px solid var(--border);
+}
+
+.cp-branch > li {
+  position: relative;
+  padding: 0.3rem 0 0.3rem 1rem;
+}
+
+.cp-branch > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.05rem;
+  width: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+.cp-node--branch {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  padding: 0.2rem 0;
+}
+
+.cp-node__note {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 0.35rem;
+}
+
+.cp-node--leaf {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1rem;
+  margin: 0.35rem 0 0.6rem;
+}
+
+.cp-node__label {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+}
+
+.cp-archetype {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border);
+}
+
+.cp-archetype__org {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.cp-archetype__desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.cp-archetype__xref {
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.cp-archetype__xref a {
+  color: var(--text-muted);
+}
+
 /* ---------- footer ---------- */
 
 .site-footer {
