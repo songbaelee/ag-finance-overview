@@ -83,10 +83,14 @@
 
   var root = null;
 
-  // Labels the user has clicked so far, in order -- purely for the
-  // breadcrumb trail. Never used as content; leaf copy always comes from
-  // the static tree at render time (see renderLanding).
-  var path = [];
+  // Steps the user has taken so far, in order -- each is { label, next },
+  // where `next` is the QUIZ_TREE key that choice led to (undefined for
+  // the last step when it led to a leaf instead of another question).
+  // Drives the breadcrumb trail and lets a click on an earlier segment
+  // jump back to that question: truncate steps to that point and
+  // re-render its `next` node. Never used as leaf content -- leaf copy
+  // always comes from the static tree at render time (see renderLanding).
+  var steps = [];
 
   function el(tag, attrs, children) {
     var node = document.createElement(tag);
@@ -107,9 +111,32 @@
     while (node.firstChild) node.removeChild(node.firstChild);
   }
 
+  // Jumps back to an earlier question: keeps steps 0..i (the segment
+  // clicked and everything before it), discards everything after, and
+  // re-renders the question that segment's answer led to. No-ops for a
+  // step with no `next` (a leaf-ending step, only ever the last segment
+  // on the landing screen) -- there's no question to jump back to.
+  function jumpToStep(i) {
+    var target = steps[i].next;
+    if (!target) return;
+    steps = steps.slice(0, i + 1);
+    renderQuestion(target);
+  }
+
   function renderBreadcrumb(container) {
-    if (path.length === 0) return;
-    container.appendChild(el("p", { class: "cp-quiz__breadcrumb" }, [path.join(" → ")]));
+    if (steps.length === 0) return;
+    var bc = el("p", { class: "cp-quiz__breadcrumb" });
+    steps.forEach(function (step, i) {
+      if (i > 0) bc.appendChild(document.createTextNode(" → "));
+      if (step.next) {
+        var link = el("button", { type: "button", class: "cp-quiz__breadcrumb-link" }, [step.label]);
+        link.addEventListener("click", function () { jumpToStep(i); });
+        bc.appendChild(link);
+      } else {
+        bc.appendChild(document.createTextNode(step.label));
+      }
+    });
+    container.appendChild(bc);
   }
 
   function renderRestartLink(container) {
@@ -119,7 +146,7 @@
   }
 
   function renderIntro() {
-    path = [];
+    steps = [];
     clear(root);
     root.appendChild(el("p", { class: "cp-quiz__copy" }, [INTRO_COPY]));
     var startBtn = el("button", { type: "button", class: "cp-quiz-btn cp-quiz-btn--primary" }, ["Start"]);
@@ -140,7 +167,7 @@
         el("span", { class: "cp-quiz__option-sub" }, [opt.sub])
       ]);
       btn.addEventListener("click", function () {
-        path.push(opt.label);
+        steps.push({ label: opt.label, next: opt.next });
         if (opt.leaf) {
           renderLanding(opt.leaf);
         } else {

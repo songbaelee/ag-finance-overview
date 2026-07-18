@@ -918,6 +918,25 @@ table.data-table {
   margin: 0 0 0.75rem;
 }
 
+.cp-quiz__breadcrumb-link {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cp-quiz__breadcrumb-link:hover {
+  color: var(--text-primary);
+}
+
+.cp-quiz__breadcrumb-link:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 1px;
+}
+
 .cp-quiz__copy {
   color: var(--text-secondary);
   margin: 0 0 1.1rem;
