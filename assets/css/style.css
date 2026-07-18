@@ -867,6 +867,7 @@ table.data-table {
   border-radius: var(--radius-md);
   padding: 0.7rem 1rem;
   margin: 0.35rem 0 0.6rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .cp-node__label {
@@ -902,6 +903,150 @@ table.data-table {
 
 .cp-archetype__xref a {
   color: var(--text-muted);
+}
+
+/* ---------- capital providers: guided quiz ---------- */
+
+.cp-quiz-section {
+  margin-top: 2.75rem;
+}
+
+.cp-quiz {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+}
+
+.cp-quiz__breadcrumb {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.cp-quiz__copy {
+  color: var(--text-secondary);
+  margin: 0 0 1.1rem;
+}
+
+.cp-quiz__question {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+}
+
+.cp-quiz__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+}
+
+.cp-quiz__option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+  background: var(--page-plane);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.cp-quiz__option:hover {
+  border-color: var(--series-bank);
+}
+
+.cp-quiz__option:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 1px;
+}
+
+.cp-quiz__option-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.cp-quiz__option-sub {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.cp-quiz-btn {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--page-plane);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.cp-quiz-btn:hover {
+  color: var(--text-primary);
+}
+
+.cp-quiz-btn:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 1px;
+}
+
+.cp-quiz-btn--primary {
+  background: color-mix(in srgb, var(--series-bank) 16%, transparent);
+  border-color: var(--series-bank);
+  color: var(--text-primary);
+}
+
+.cp-quiz__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+
+.cp-quiz__restart {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: var(--font-sans);
+}
+
+.cp-quiz__restart:hover {
+  color: var(--text-primary);
+}
+
+.cp-quiz__landing-cards > .cp-archetype {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.cp-quiz__landing-cards > .cp-archetype + .cp-archetype {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Transient highlight when a "jump to the map" action lands on a static
+   tree leaf -- no existing highlight/flash pattern on the site to reuse,
+   so this is a new, simple border-color flash (transition lives on the
+   base .cp-node--leaf rule above so it fades both in and out). */
+.cp-node--leaf.is-flash {
+  border-color: var(--illustrative-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--illustrative-accent) 35%, transparent);
 }
 
 /* ---------- footer ---------- */

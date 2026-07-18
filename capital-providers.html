@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Capital Providers — Ag Finance Overview</title>
-<link rel="stylesheet" href="assets/css/style.css?v=5">
+<link rel="stylesheet" href="assets/css/style.css?v=6">
 </head>
 <body>
 
@@ -55,6 +55,16 @@
     </div>
   </section>
 
+  <section class="cp-quiz-section">
+    <h2 class="section-heading">Not sure where to start?</h2>
+    <div id="cp-quiz-root" class="cp-quiz" aria-live="polite"></div>
+  </section>
+
+  <p class="section-transition">
+    Or browse the full map below — the guided path above walks the same
+    tree shown here.
+  </p>
+
   <section class="section-illustrative">
     <h2 class="section-heading">
       Approaches &amp; named examples
@@ -76,7 +86,7 @@
       </div>
       <ul class="cp-branch">
         <li>
-          <div class="cp-node cp-node--leaf">
+          <div class="cp-node cp-node--leaf" id="cp-leaf-farmer">
             <div class="cp-node__label">
               Farmer level <span class="cp-node__note">(agricultural extension)</span>
             </div>
@@ -91,7 +101,7 @@
           </div>
         </li>
         <li>
-          <div class="cp-node cp-node--leaf">
+          <div class="cp-node cp-node--leaf" id="cp-leaf-firm">
             <div class="cp-node__label">Firm level</div>
             <div class="cp-archetype" id="cp-agri-frontier-demand">
               <div class="cp-archetype__org">Agri Frontier</div>
@@ -121,7 +131,7 @@
           <div class="cp-node cp-node--branch">Banks</div>
           <ul class="cp-branch">
             <li>
-              <div class="cp-node cp-node--leaf">
+              <div class="cp-node cp-node--leaf" id="cp-leaf-banks-guarantee">
                 <div class="cp-node__label">Guarantee</div>
                 <div class="cp-archetype">
                   <div class="cp-archetype__org">DFC</div>
@@ -134,7 +144,7 @@
               </div>
             </li>
             <li>
-              <div class="cp-node cp-node--leaf">
+              <div class="cp-node cp-node--leaf" id="cp-leaf-banks-incentivize">
                 <div class="cp-node__label">Grant-to-incentivize</div>
                 <div class="cp-archetype">
                   <div class="cp-archetype__org">Aceli</div>
@@ -152,7 +162,7 @@
           <div class="cp-node cp-node--branch">Funds</div>
           <ul class="cp-branch">
             <li>
-              <div class="cp-node cp-node--leaf">
+              <div class="cp-node cp-node--leaf" id="cp-leaf-funds-grant">
                 <div class="cp-node__label">Grant</div>
                 <div class="cp-archetype" id="cp-fasa">
                   <div class="cp-archetype__org">FASA</div>
@@ -176,7 +186,7 @@
               <div class="cp-node cp-node--branch">Repayable</div>
               <ul class="cp-branch">
                 <li>
-                  <div class="cp-node cp-node--leaf">
+                  <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-sme">
                     <div class="cp-node__label">SME-specialist</div>
                     <div class="cp-archetype">
                       <div class="cp-archetype__org">Balloon</div>
@@ -192,7 +202,7 @@
                   <div class="cp-node cp-node--branch">Agri-specialist</div>
                   <ul class="cp-branch">
                     <li>
-                      <div class="cp-node cp-node--leaf">
+                      <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-agri-local">
                         <div class="cp-node__label">Local</div>
                         <div class="cp-archetype">
                           <div class="cp-archetype__org">Pearl Capital Partners</div>
@@ -208,7 +218,7 @@
                       <div class="cp-node cp-node--branch">International</div>
                       <ul class="cp-branch">
                         <li>
-                          <div class="cp-node cp-node--leaf">
+                          <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-agri-intl-lending">
                             <div class="cp-node__label">Lending-focus</div>
                             <div class="cp-archetype">
                               <div class="cp-archetype__org">SIDI</div>
@@ -221,7 +231,7 @@
                           </div>
                         </li>
                         <li>
-                          <div class="cp-node cp-node--leaf">
+                          <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-agri-intl-ta">
                             <div class="cp-node__label">TA-focus</div>
                             <div class="cp-archetype">
                               <div class="cp-archetype__org">Root Capital</div>
@@ -248,7 +258,7 @@
           </div>
           <ul class="cp-branch">
             <li>
-              <div class="cp-node cp-node--leaf">
+              <div class="cp-node cp-node--leaf" id="cp-leaf-donor-most">
                 <div class="cp-node__label">Most control</div>
                 <div class="cp-archetype">
                   <div class="cp-archetype__org">
@@ -263,7 +273,7 @@
               </div>
             </li>
             <li>
-              <div class="cp-node cp-node--leaf">
+              <div class="cp-node cp-node--leaf" id="cp-leaf-donor-more">
                 <div class="cp-node__label">More control</div>
                 <div class="cp-archetype">
                   <div class="cp-archetype__org">Daraja</div>
@@ -290,7 +300,7 @@
               </div>
             </li>
             <li>
-              <div class="cp-node cp-node--leaf">
+              <div class="cp-node cp-node--leaf" id="cp-leaf-donor-less">
                 <div class="cp-node__label">Less control, narrow strategy</div>
                 <div class="cp-archetype" id="cp-n3f">
                   <div class="cp-archetype__org">N3F</div>
@@ -327,5 +337,6 @@
   <p>Ag Finance Overview is a resource for development staff without a finance background.</p>
 </footer>
 
+<script src="assets/js/capital-providers-quiz.js"></script>
 </body>
 </html>
