@@ -1,30 +1,59 @@
 /* "Closing the Gap" — a single stacked horizontal-bar diagram of the
    illustrative demand/supply -> addressable -> temporary/permanent ->
-   grants/repayable -> TA -> farmer/firm -> BDS/investment-readiness tree.
-   There is exactly one diagram DOM node for the whole page, mounted once
-   near the top and never relocated. Each of the 7 sections has its own
-   click-to-toggle button; toggling a level on/off adds or removes that
-   row from the diagram (rows always render in level0..level6 order
-   regardless of toggle order). Two dashed dividers double as drag
-   handles directly on the bars (demand/supply on the top row; grants/
-   repayable wherever that split is visible) and recompute every
-   currently-shown row from shared, session-only state — no persistence,
-   no backend, no separate slider UI. */
+   grants/repayable -> TA/incentives/first-loss/investment capital ->
+   farmer/firm tree. There is exactly one diagram DOM node for the whole
+   page, mounted once near the top and never relocated. Each of the 6
+   sections has its own click-to-toggle button; toggling a level on/off
+   adds or removes that row from the diagram (rows always render in
+   level0..level5 order regardless of toggle order). Two dashed dividers
+   double as drag handles directly on the bars (demand/supply on the top
+   row; grants/repayable wherever that split is visible) and recompute
+   every currently-shown row from shared, session-only state — no
+   persistence, no backend, no separate slider UI. */
 (function () {
   "use strict";
 
   var SVG_NS = "http://www.w3.org/2000/svg";
 
+  var DEMAND_PCT_MIN = 30, DEMAND_PCT_MAX = 80;
+  var DEFAULT_DEMAND_PCT = 60;
+
+  // Fixed illustrative constants — not addressable's share no longer has
+  // its own control (see grantPctOfPermanent below for the one dial that
+  // replaced it); everything below recomputes proportionally.
+  var NOT_ADDRESSABLE_PCT_OF_DEMAND = 84;
+  var TEMP_AGAIN_PCT_OF_SUPPLY = 15;
+  var FARMER_PCT_OF_TA = 55;
+
+  // Grants' leftover beyond TA (= grantPortion) splits evenly into
+  // Incentives and the grants-side half of First-loss. Repayable's
+  // leftover beyond Investment capital becomes the other half of
+  // First-loss. Together these let First-loss straddle the grants/
+  // repayable divider — same crossing pattern "Addressable" already uses
+  // on the demand/supply divider above it — without any new rendering
+  // logic, just correct segment ordering and widths.
+  var INCENTIVES_PCT_OF_GRANT_PORTION = 50;
+  var INVESTMENT_CAPITAL_PCT_OF_REPAYABLE = 100 * 25 / 30;
+
+  // Default grants/repayable split target: 70% grants, 30% repayable at
+  // the default 60% demand share. grantPctOfPermanent is solved backward
+  // from that target rather than hardcoded, so the relationship stays
+  // visible: grants = demand + grantPortion, so grantPortion needs to be
+  // 70 - 60 = 10 points of the full gap; permanent (the supply-side base
+  // grantPortion is carved from) is (100-60) * (1 - 15/100) = 34 points,
+  // so grantPctOfPermanent = 10/34 * 100.
+  var DEFAULT_GRANTS_PCT = 70;
+  var defaultPermanent = (100 - DEFAULT_DEMAND_PCT) * (1 - TEMP_AGAIN_PCT_OF_SUPPLY / 100);
+  var defaultGrantPortion = DEFAULT_GRANTS_PCT - DEFAULT_DEMAND_PCT;
+
   var state = {
-    demandPct: 60,
+    demandPct: DEFAULT_DEMAND_PCT,
     // Share of the "permanent" supply segment that's grant-funded rather
     // than repayable. This is the one thing the grants/repayable divider
     // actually drags — notAddressable+ta already equals the full demand
     // share, so that portion is always grants regardless of this value.
-    grantPctOfPermanent: 50
+    grantPctOfPermanent: defaultGrantPortion / defaultPermanent * 100
   };
-
-  var DEMAND_PCT_MIN = 30, DEMAND_PCT_MAX = 80;
 
   // Report-sourced total gap (rounded, matches the $74B figure used
   // elsewhere on this page and in Market Sizing) — used to give the two
@@ -39,14 +68,6 @@
   function usdBFromPct(pct) {
     return "~$" + Math.round(pct / 100 * GAP_TOTAL_USD_B) + "B";
   }
-
-  // Fixed illustrative constants — not addressable's share no longer has
-  // its own control (see grantPctOfPermanent above for the one dial that
-  // replaced it); everything below recomputes proportionally.
-  var NOT_ADDRESSABLE_PCT_OF_DEMAND = 84;
-  var TEMP_AGAIN_PCT_OF_SUPPLY = 15;
-  var FARMER_PCT_OF_TA = 55;
-  var BDS_PCT_OF_FIRM = 70;
 
   function compute() {
     var demand = state.demandPct;
@@ -64,41 +85,42 @@
     var grants = notAddressable + ta + grantPortion;
     var repayable = repayablePortion + tempAgain;
 
-    var incentives = grantPortion;
-    var firstLoss = repayable;
+    // See INCENTIVES_PCT_OF_GRANT_PORTION/INVESTMENT_CAPITAL_PCT_OF_REPAYABLE
+    // above for why this split always keeps First-loss straddling the
+    // grants/repayable boundary while every row still sums to 100:
+    // demand + incentives + firstLoss + investmentCapital ==
+    // demand + grantPortion + repayable == demand + supply == 100.
+    var incentives = grantPortion * INCENTIVES_PCT_OF_GRANT_PORTION / 100;
+    var investmentCapital = repayable * INVESTMENT_CAPITAL_PCT_OF_REPAYABLE / 100;
+    var firstLoss = (grantPortion - incentives) + (repayable - investmentCapital);
 
-    // Farmer/firm (and, cascading from firm, BDS/investment-readiness)
-    // are sized off the *full* demand share, not just the addressable-only
-    // "ta" subset -- this makes them fill exactly the same width "TA"
-    // already occupies in the row above (which also spans the full demand
-    // share), with no left-over not-addressable gap inside that span.
+    // Farmer/firm are sized off the *full* demand share, not just the
+    // addressable-only "ta" subset -- this makes them fill exactly the
+    // same width "TA" already occupies in the row above (which also spans
+    // the full demand share), with no left-over not-addressable gap
+    // inside that span.
     var farmer = demand * FARMER_PCT_OF_TA / 100;
     var firm = demand - farmer;
-
-    var bds = firm * BDS_PCT_OF_FIRM / 100;
-    var investmentReadiness = firm - bds;
 
     return {
       demand: demand, supply: supply,
       notAddressable: notAddressable, ta: ta,
       permanent: permanent, tempAgain: tempAgain,
       grants: grants, repayable: repayable,
-      incentives: incentives, firstLoss: firstLoss,
-      farmer: farmer, firm: firm,
-      bds: bds, investmentReadiness: investmentReadiness
+      incentives: incentives, investmentCapital: investmentCapital, firstLoss: firstLoss,
+      farmer: farmer, firm: firm
     };
   }
 
-  var ALL_LEVELS = ["level0", "level1", "level2", "level3", "level4", "level5", "level6"];
+  var ALL_LEVELS = ["level0", "level1", "level2", "level3", "level4", "level5"];
 
   var LEVEL_TITLES = {
     level0: "Demand vs. supply",
     level1: "Addressable vs. not addressable",
     level2: "Temporary, permanent, temporary again",
     level3: "Grants vs. repayable capital",
-    level4: "Grants: TA, incentives, first-loss",
-    level5: "TA: farmer level vs. firm level",
-    level6: "Firm level: BDS vs. investment readiness"
+    level4: "TA, incentives, first-loss & investment capital",
+    level5: "TA: farmer level vs. firm level"
   };
 
   var ROWBUILDERS = {
@@ -142,11 +164,12 @@
     },
     level4: function (d) {
       return {
-        title: "Within grants: TA, incentives, first-loss",
+        title: "TA, incentives, first-loss & investment capital",
         segs: [
           { label: "TA", value: d.demand, varName: "--series-bank" },
           { label: "Incentives", value: d.incentives, varName: "--series-magenta" },
-          { label: "First-loss", value: d.firstLoss, varName: "--series-green" }
+          { label: "First-loss", value: d.firstLoss, varName: "--series-green" },
+          { label: "Investment capital", value: d.investmentCapital, varName: "--series-count" }
         ]
       };
     },
@@ -157,19 +180,8 @@
           { label: "Farmer level", value: d.farmer, varName: "--series-bank" },
           { label: "Firm level", value: d.firm, varName: "--series-red" },
           { label: "Incentives", value: d.incentives, varName: "--series-magenta", muted: true },
-          { label: "First-loss", value: d.firstLoss, varName: "--series-green", muted: true }
-        ]
-      };
-    },
-    level6: function (d) {
-      return {
-        title: "Within firm level: BDS vs. investment readiness",
-        segs: [
-          { label: "Farmer level", value: d.farmer, varName: "--series-bank", muted: true },
-          { label: "BDS", value: d.bds, varName: "--series-red" },
-          { label: "Investment readiness", value: d.investmentReadiness, varName: "--series-count" },
-          { label: "Incentives", value: d.incentives, varName: "--series-magenta", muted: true },
-          { label: "First-loss", value: d.firstLoss, varName: "--series-green", muted: true }
+          { label: "First-loss", value: d.firstLoss, varName: "--series-green", muted: true },
+          { label: "Investment capital", value: d.investmentCapital, varName: "--series-count", muted: true }
         ]
       };
     }
@@ -366,7 +378,7 @@
     rows.forEach(function (row, i) {
       var y = topPad + i * (rowH + rowGap);
       if (grantsHandleY === null &&
-        (row.key === "level3" || row.key === "level4" || row.key === "level5" || row.key === "level6")) {
+        (row.key === "level3" || row.key === "level4" || row.key === "level5")) {
         grantsHandleY = y;
       }
 
@@ -594,7 +606,7 @@
 
   // Single-diagram state: one DOM node, mounted once, never relocated.
   // activeLevels is unordered (toggle order); rows always render in
-  // level0..level6 order regardless of which order they were toggled on.
+  // level0..level5 order regardless of which order they were toggled on.
   var diagram = {
     container: null,
     activeLevels: ["level0"]
@@ -605,7 +617,7 @@
   // nudge) can restore focus to its replacement element afterward.
   var focusedDividerKey = null;
 
-  var GRANTS_ROW_KEYS = ["level3", "level4", "level5", "level6"];
+  var GRANTS_ROW_KEYS = ["level3", "level4", "level5"];
 
   function sortedActiveLevels() {
     return ALL_LEVELS.filter(function (lvl) {
