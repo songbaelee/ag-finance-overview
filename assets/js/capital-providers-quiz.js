@@ -25,16 +25,9 @@
     supply: {
       question: "Banks, funds, or donor-directed vehicles?",
       options: [
-        { label: "Banks", sub: "commercial lenders, backed or incentivized to lend more", next: "banks" },
+        { label: "Banks", sub: "commercial lenders, backed or incentivized to lend more", leaf: "cp-leaf-banks-incentivize" },
         { label: "Funds", sub: "dedicated vehicles investing agri-SME capital", next: "funds" },
         { label: "Donor-directed", sub: "donor money deployed with varying retained control", next: "donor" }
-      ]
-    },
-    banks: {
-      question: "Guarantee-based or incentive-based?",
-      options: [
-        { label: "Guarantee", sub: "reduces the risk banks take on", leaf: "cp-leaf-banks-guarantee" },
-        { label: "Grant-to-incentivize", sub: "pays lenders to make more/better loans", leaf: "cp-leaf-banks-incentivize" }
       ]
     },
     funds: {
