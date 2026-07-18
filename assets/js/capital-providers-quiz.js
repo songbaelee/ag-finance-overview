@@ -2,7 +2,7 @@
    the same demand/supply -> ... -> leaf tree shown statically below on
    the page. Question/leaf structure lives in QUIZ_TREE; leaf content is
    never duplicated here -- the landing screen clones the matching
-   .cp-node--leaf element from the static tree at render time, so the
+   .cp-archetype card(s) out of the static tree at render time, so the
    quiz and the static map can never drift out of copy sync. */
 (function () {
   "use strict";
@@ -167,6 +167,17 @@
     return node;
   }
 
+  // Scrolls to the leaf's box in the static tree below and gives it a
+  // brief border-color flash (see .cp-node--leaf.is-flash in style.css)
+  // so it's obvious which card the quiz just pointed at.
+  function jumpToMap(leafId) {
+    var target = document.getElementById(leafId);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.classList.add("is-flash");
+    window.setTimeout(function () { target.classList.remove("is-flash"); }, 1600);
+  }
+
   // Leaf cards are never retyped here -- each card is a live clone of
   // the matching .cp-archetype element(s) already in the static tree
   // below, org name/description/cross-ref included verbatim, so the two
@@ -189,6 +200,11 @@
     var againBtn = el("button", { type: "button", class: "cp-quiz-btn" }, ["Explore another path"]);
     againBtn.addEventListener("click", renderIntro);
     actions.appendChild(againBtn);
+
+    var jumpBtn = el("button", { type: "button", class: "cp-quiz-btn" }, ["See this in the map below"]);
+    jumpBtn.addEventListener("click", function () { jumpToMap(leafId); });
+    actions.appendChild(jumpBtn);
+
     root.appendChild(actions);
   }
 
