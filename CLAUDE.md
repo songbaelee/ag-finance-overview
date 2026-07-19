@@ -13,8 +13,6 @@ shared publicly, hosted on GitHub Pages.
   2. Market Sizing
   3. Types of Ag Finance
   4. Capital Providers
-  5. CRS Programming Examples
-  6. Glossary
 
 ## Build approach
 - Plain HTML/CSS/JS (or an equally lightweight static setup) — no framework
@@ -41,5 +39,4 @@ Always cite the source once, clearly, near the top of any page using it.
 
 ## Audience and tone
 Writing for CRS colleagues without a finance background. Prioritize plain
-language over technical jargon; define finance terms in context or link to
-the glossary once it exists.
+language over technical jargon; define finance terms in context.
