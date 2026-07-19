@@ -196,8 +196,18 @@
   function jumpToMap(leafId) {
     var target = document.getElementById(leafId);
     if (!target) return;
-    target.scrollIntoView({ behavior: "smooth", block: "center" });
     var cards = target.classList.contains("cp-archetype") ? [target] : target.querySelectorAll(".cp-archetype");
+
+    // The tree starts with everything below the top two headings
+    // collapsed (see capital-providers-tree.js), so the target card may
+    // be hidden behind one or more collapsed ancestor headings. Open
+    // exactly those -- and nothing else -- before scrolling, or the
+    // flash would land on an invisible element.
+    if (window.cpTree && window.cpTree.expandAncestorsOf) {
+      for (var a = 0; a < cards.length; a++) window.cpTree.expandAncestorsOf(cards[a]);
+    }
+
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
     for (var i = 0; i < cards.length; i++) cards[i].classList.add("is-flash");
     window.setTimeout(function () {
       for (var i = 0; i < cards.length; i++) cards[i].classList.remove("is-flash");
