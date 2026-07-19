@@ -812,6 +812,90 @@ table.data-table {
   margin: 0;
 }
 
+/* ---------- capital providers: static overview graphic ---------- */
+
+.cp-overview__figure {
+  margin: 0;
+}
+
+.cp-overview__trigger {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  cursor: zoom-in;
+}
+
+.cp-overview__img {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.cp-overview__caption {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Lightbox overlay: progressive enhancement over the plain <a
+   target="_blank"> the overview image sits in -- without JS the link
+   still opens the full-size image in a new tab. */
+.cp-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  cursor: zoom-out;
+}
+
+.cp-lightbox[hidden] {
+  display: none;
+}
+
+.cp-lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  cursor: default;
+}
+
+.cp-lightbox__close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.cp-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.cp-lightbox__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 /* ---------- capital providers: box/branch tree (not proportional --
    deliberately plain nested boxes, distinct from the Closing the Gap
    stacked-bar diagrams) ---------- */
