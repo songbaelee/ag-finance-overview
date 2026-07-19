@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Landscape — Ag Finance Overview</title>
-<link rel="stylesheet" href="assets/css/style.css?v=7">
+<link rel="stylesheet" href="assets/css/style.css?v=8">
 </head>
 <body>
 
@@ -87,32 +87,44 @@
     <div class="cp-tree">
       <ul class="cp-branch">
         <li>
-          <div class="cp-node cp-node--leaf" id="cp-leaf-farmer">
-            <div class="cp-node__label">
-              Farmer level <span class="cp-node__note">(agricultural extension)</span>
-            </div>
-            <div class="cp-archetype">
-              <div class="cp-archetype__org"><a href="https://oneacrefund.org" target="_blank" rel="noopener">One Acre Fund</a></div>
-              <p class="cp-archetype__desc">
-                Delivers bundled inputs, credit, and training directly to
-                smallholder farmers — grant-funded technical assistance at
-                the farmer level.
-              </p>
-            </div>
-          </div>
+          <div class="cp-node cp-node--branch">Farmer level</div>
+          <ul class="cp-branch">
+            <li id="cp-leaf-farmer">
+              <div class="cp-node cp-node--branch">Agricultural extension</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-archetype">
+                    <div class="cp-archetype__org"><a href="https://oneacrefund.org" target="_blank" rel="noopener">One Acre Fund</a></div>
+                    <p class="cp-archetype__desc">
+                      Delivers bundled inputs, credit, and training directly to
+                      smallholder farmers — grant-funded technical assistance at
+                      the farmer level.
+                    </p>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </li>
         <li>
-          <div class="cp-node cp-node--leaf" id="cp-leaf-firm">
-            <div class="cp-node__label">Firm level</div>
-            <div class="cp-archetype" id="cp-agri-frontier-demand">
-              <div class="cp-archetype__org"><a href="https://agrifrontier.com" target="_blank" rel="noopener">Agri Frontier</a></div>
-              <p class="cp-archetype__desc">
-                Advisory support aimed at the agribusiness firm itself —
-                helping build the systems and track record a firm needs to
-                become financeable.
-              </p>
-            </div>
-          </div>
+          <div class="cp-node cp-node--branch">Firm level</div>
+          <ul class="cp-branch">
+            <li id="cp-leaf-firm">
+              <div class="cp-node cp-node--branch">Business development services</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-archetype" id="cp-agri-frontier-demand">
+                    <div class="cp-archetype__org"><a href="https://agrifrontier.com" target="_blank" rel="noopener">Agri Frontier</a></div>
+                    <p class="cp-archetype__desc">
+                      Advisory support aimed at the agribusiness firm itself —
+                      helping build the systems and track record a firm needs to
+                      become financeable.
+                    </p>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
@@ -123,98 +135,110 @@
         <li>
           <div class="cp-node cp-node--branch">Banks</div>
           <ul class="cp-branch">
-            <li>
-              <div class="cp-node cp-node--leaf" id="cp-leaf-banks-incentivize">
-                <div class="cp-node__label">Grant-to-incentivize</div>
-                <div class="cp-archetype">
-                  <div class="cp-archetype__org"><a href="https://aceliafrica.org" target="_blank" rel="noopener">Aceli</a></div>
-                  <p class="cp-archetype__desc">
-                    Pays lenders performance-based incentives to make more
-                    loans to agri-SMEs, rather than guaranteeing the loans
-                    directly.
-                  </p>
-                </div>
-              </div>
+            <li id="cp-leaf-banks-incentivize">
+              <div class="cp-node cp-node--branch">Grant-to-incentivize</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-archetype">
+                    <div class="cp-archetype__org"><a href="https://aceliafrica.org" target="_blank" rel="noopener">Aceli</a></div>
+                    <p class="cp-archetype__desc">
+                      Pays lenders performance-based incentives to make more
+                      loans to agri-SMEs, rather than guaranteeing the loans
+                      directly.
+                    </p>
+                  </div>
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
         <li>
           <div class="cp-node cp-node--branch">Funds</div>
           <ul class="cp-branch">
-            <li>
-              <div class="cp-node cp-node--leaf" id="cp-leaf-funds-grant">
-                <div class="cp-node__label">Grant</div>
-                <div class="cp-archetype" id="cp-fasa">
-                  <div class="cp-archetype__org"><a href="https://fasafund.com" target="_blank" rel="noopener">FASA</a></div>
-                  <p class="cp-archetype__desc">
-                    FASA raises grant capital from donors, but deploys it
-                    as repayable investment capital — mostly junior
-                    equity — into funds that invest in agri-SMEs. It's a
-                    fund-of-funds, not a direct lender.
-                  </p>
-                </div>
-              </div>
+            <li id="cp-leaf-funds-grant">
+              <div class="cp-node cp-node--branch">Grant</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-archetype" id="cp-fasa">
+                    <div class="cp-archetype__org"><a href="https://fasafund.com" target="_blank" rel="noopener">FASA</a></div>
+                    <p class="cp-archetype__desc">
+                      FASA raises grant capital from donors, but deploys it
+                      as repayable investment capital — mostly junior
+                      equity — into funds that invest in agri-SMEs. It's a
+                      fund-of-funds, not a direct lender.
+                    </p>
+                  </div>
+                </li>
+              </ul>
             </li>
             <li>
               <div class="cp-node cp-node--branch">Repayable</div>
               <ul class="cp-branch">
-                <li>
-                  <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-sme">
-                    <div class="cp-node__label">SME-specialist</div>
-                    <div class="cp-archetype">
-                      <div class="cp-archetype__org"><a href="https://balloonventures.com" target="_blank" rel="noopener">Balloon</a></div>
-                      <p class="cp-archetype__desc">
-                        Invests in small and growing businesses broadly —
-                        agriculture is one sector among several, not an
-                        agriculture-only mandate.
-                      </p>
-                    </div>
-                  </div>
+                <li id="cp-leaf-repayable-sme">
+                  <div class="cp-node cp-node--branch">SME-specialist</div>
+                  <ul class="cp-branch">
+                    <li>
+                      <div class="cp-archetype">
+                        <div class="cp-archetype__org"><a href="https://balloonventures.com" target="_blank" rel="noopener">Balloon</a></div>
+                        <p class="cp-archetype__desc">
+                          Invests in small and growing businesses broadly —
+                          agriculture is one sector among several, not an
+                          agriculture-only mandate.
+                        </p>
+                      </div>
+                    </li>
+                  </ul>
                 </li>
                 <li>
                   <div class="cp-node cp-node--branch">Agri-specialist</div>
                   <ul class="cp-branch">
-                    <li>
-                      <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-agri-local">
-                        <div class="cp-node__label">Local</div>
-                        <div class="cp-archetype">
-                          <div class="cp-archetype__org"><a href="https://pearlcapital.net" target="_blank" rel="noopener">Pearl Capital Partners</a></div>
-                          <p class="cp-archetype__desc">
-                            An Africa-based fund manager investing
-                            specifically in agribusiness SMEs across the
-                            region.
-                          </p>
-                        </div>
-                      </div>
+                    <li id="cp-leaf-repayable-agri-local">
+                      <div class="cp-node cp-node--branch">Local</div>
+                      <ul class="cp-branch">
+                        <li>
+                          <div class="cp-archetype">
+                            <div class="cp-archetype__org"><a href="https://pearlcapital.net" target="_blank" rel="noopener">Pearl Capital Partners</a></div>
+                            <p class="cp-archetype__desc">
+                              An Africa-based fund manager investing
+                              specifically in agribusiness SMEs across the
+                              region.
+                            </p>
+                          </div>
+                        </li>
+                      </ul>
                     </li>
                     <li>
                       <div class="cp-node cp-node--branch">International</div>
                       <ul class="cp-branch">
-                        <li>
-                          <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-agri-intl-lending">
-                            <div class="cp-node__label">Lending-focus</div>
-                            <div class="cp-archetype">
-                              <div class="cp-archetype__org"><a href="https://sidi.fr/en" target="_blank" rel="noopener">SIDI</a></div>
-                              <p class="cp-archetype__desc">
-                                An international solidarity-finance
-                                investor providing debt to agricultural
-                                and rural enterprises.
-                              </p>
-                            </div>
-                          </div>
+                        <li id="cp-leaf-repayable-agri-intl-lending">
+                          <div class="cp-node cp-node--branch">Lending-focus</div>
+                          <ul class="cp-branch">
+                            <li>
+                              <div class="cp-archetype">
+                                <div class="cp-archetype__org"><a href="https://sidi.fr/en" target="_blank" rel="noopener">SIDI</a></div>
+                                <p class="cp-archetype__desc">
+                                  An international solidarity-finance
+                                  investor providing debt to agricultural
+                                  and rural enterprises.
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
                         </li>
-                        <li>
-                          <div class="cp-node cp-node--leaf" id="cp-leaf-repayable-agri-intl-ta">
-                            <div class="cp-node__label">TA-focus</div>
-                            <div class="cp-archetype">
-                              <div class="cp-archetype__org"><a href="https://rootcapital.org" target="_blank" rel="noopener">Root Capital</a></div>
-                              <p class="cp-archetype__desc">
-                                Pairs lending to agricultural enterprises
-                                with substantial technical assistance,
-                                rather than capital alone.
-                              </p>
-                            </div>
-                          </div>
+                        <li id="cp-leaf-repayable-agri-intl-ta">
+                          <div class="cp-node cp-node--branch">TA-focus</div>
+                          <ul class="cp-branch">
+                            <li>
+                              <div class="cp-archetype">
+                                <div class="cp-archetype__org"><a href="https://rootcapital.org" target="_blank" rel="noopener">Root Capital</a></div>
+                                <p class="cp-archetype__desc">
+                                  Pairs lending to agricultural enterprises
+                                  with substantial technical assistance,
+                                  rather than capital alone.
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
                         </li>
                       </ul>
                     </li>
@@ -230,60 +254,66 @@
             <span class="cp-node__note">(ordered by control retained, most → least)</span>
           </div>
           <ul class="cp-branch">
-            <li>
-              <div class="cp-node cp-node--leaf" id="cp-leaf-donor-most">
-                <div class="cp-node__label">Most control</div>
-                <div class="cp-archetype">
-                  <div class="cp-archetype__org">
-                    <a href="https://crs.org/our-work-overseas/partnering-crs/private-donors-and-partnerships/isidro" target="_blank" rel="noopener">Isidro</a>
-                    <span class="cp-node__note">(balance-sheet lending)</span>
+            <li id="cp-leaf-donor-most">
+              <div class="cp-node cp-node--branch">Most control</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-archetype">
+                    <div class="cp-archetype__org">
+                      <a href="https://crs.org/our-work-overseas/partnering-crs/private-donors-and-partnerships/isidro" target="_blank" rel="noopener">Isidro</a>
+                      <span class="cp-node__note">(balance-sheet lending)</span>
+                    </div>
+                    <p class="cp-archetype__desc">
+                      Lends directly from its own balance sheet — the
+                      donor-directed structure that retains the most direct
+                      control over capital deployment.
+                    </p>
+                    <p class="cp-archetype__xref">
+                      Operates in Central America, not Sub-Saharan Africa —
+                      included here for its structure (direct balance-sheet
+                      lending), not as a regional example.
+                    </p>
                   </div>
-                  <p class="cp-archetype__desc">
-                    Lends directly from its own balance sheet — the
-                    donor-directed structure that retains the most direct
-                    control over capital deployment.
-                  </p>
-                  <p class="cp-archetype__xref">
-                    Operates in Central America, not Sub-Saharan Africa —
-                    included here for its structure (direct balance-sheet
-                    lending), not as a regional example.
-                  </p>
-                </div>
-              </div>
+                </li>
+              </ul>
             </li>
-            <li>
-              <div class="cp-node cp-node--leaf" id="cp-leaf-donor-more">
-                <div class="cp-node__label">More control</div>
-                <div class="cp-archetype">
-                  <div class="cp-archetype__org">
-                    <a href="https://oneacrefund.org/ventures" target="_blank" rel="noopener">One Acre Ventures</a>
-                    <span class="cp-node__note">(JV with IDH)</span>
+            <li id="cp-leaf-donor-more">
+              <div class="cp-node cp-node--branch">More control</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-archetype">
+                    <div class="cp-archetype__org">
+                      <a href="https://oneacrefund.org/ventures" target="_blank" rel="noopener">One Acre Ventures</a>
+                      <span class="cp-node__note">(JV with IDH)</span>
+                    </div>
+                    <p class="cp-archetype__desc">
+                      A joint venture pursuing a defined strategy rather
+                      than direct deal-by-deal control.
+                    </p>
                   </div>
-                  <p class="cp-archetype__desc">
-                    A joint venture pursuing a defined strategy rather
-                    than direct deal-by-deal control.
-                  </p>
-                </div>
-              </div>
+                </li>
+              </ul>
             </li>
-            <li>
-              <div class="cp-node cp-node--leaf" id="cp-leaf-donor-less">
-                <div class="cp-node__label">Less control, narrow strategy</div>
-                <div class="cp-archetype" id="cp-n3f">
-                  <div class="cp-archetype__org"><a href="https://incofin.com/nutritious-foods-financing-facility" target="_blank" rel="noopener">N3F</a></div>
-                  <p class="cp-archetype__desc">
-                    A donor-directed vehicle aimed at a narrow, defined
-                    strategy rather than close control of individual
-                    deals.
-                  </p>
-                  <p class="cp-archetype__xref">
-                    GAIN designed N3F's narrow investment strategy at
-                    launch, but doesn't sit on the investment committee —
-                    narrow-strategy control without deal-level
-                    involvement. Managed by Incofin.
-                  </p>
-                </div>
-              </div>
+            <li id="cp-leaf-donor-less">
+              <div class="cp-node cp-node--branch">Less control, narrow strategy</div>
+              <ul class="cp-branch">
+                <li>
+                  <div class="cp-archetype" id="cp-n3f">
+                    <div class="cp-archetype__org"><a href="https://incofin.com/nutritious-foods-financing-facility" target="_blank" rel="noopener">N3F</a></div>
+                    <p class="cp-archetype__desc">
+                      A donor-directed vehicle aimed at a narrow, defined
+                      strategy rather than close control of individual
+                      deals.
+                    </p>
+                    <p class="cp-archetype__xref">
+                      GAIN designed N3F's narrow investment strategy at
+                      launch, but doesn't sit on the investment committee —
+                      narrow-strategy control without deal-level
+                      involvement. Managed by Incofin.
+                    </p>
+                  </div>
+                </li>
+              </ul>
             </li>
           </ul>
         </li>

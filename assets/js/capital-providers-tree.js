@@ -1,7 +1,8 @@
 /* Collapsible static tree for The Landscape's "Approaches & named
    examples" section. Adds a +/- toggle to every nested section heading
-   -- the two top-level headings (Demand side, Supply side), every
-   .cp-node--branch label, and every leaf's .cp-node__label -- so
+   -- the two top-level headings (Demand side, Supply side) and every
+   .cp-node--branch label, which is every heading in the tree now that
+   branches and (former) leaves share the same plain-row markup -- so
    clicking one hides/shows that heading's nested content (down to and
    including the org cards themselves). Default state is fully expanded,
    matching how the page looked before this existed. Purely a display
@@ -34,19 +35,6 @@
     });
   }
 
-  // Siblings of `startEl` that carry `className`, stopping as soon as a
-  // sibling without it is reached (used to collect a leaf's archetype
-  // card(s), which always immediately follow its label).
-  function siblingsWithClass(startEl, className) {
-    var found = [];
-    var sib = startEl.nextElementSibling;
-    while (sib && sib.classList.contains(className)) {
-      found.push(sib);
-      sib = sib.nextElementSibling;
-    }
-    return found;
-  }
-
   function addToggle(headingEl, contentEls) {
     if (contentEls.length === 0) return;
     var label = headingEl.textContent.trim();
@@ -68,20 +56,16 @@
       if (tree && tree.classList.contains("cp-tree")) addToggle(h, [tree]);
     }
 
-    // Branch headings (Banks, Funds, Repayable, ...): each is followed
-    // by the <ul class="cp-branch"> holding its children.
+    // Every other heading (Banks, Funds, Repayable, ..., and every
+    // former "leaf" heading like Grant-to-incentivize or Agricultural
+    // extension): each is followed by the <ul class="cp-branch"> holding
+    // its children, whether those children are further headings or just
+    // an org card.
     var branches = section.querySelectorAll(".cp-node--branch");
     for (var b = 0; b < branches.length; b++) {
       var branchEl = branches[b];
       var list = branchEl.nextElementSibling;
       if (list && list.tagName === "UL") addToggle(branchEl, [list]);
-    }
-
-    // Leaf headings: .cp-node__label, followed by one or more sibling
-    // .cp-archetype cards within the same .cp-node--leaf.
-    var leafLabels = section.querySelectorAll(".cp-node__label");
-    for (var l = 0; l < leafLabels.length; l++) {
-      addToggle(leafLabels[l], siblingsWithClass(leafLabels[l], "cp-archetype"));
     }
   });
 })();

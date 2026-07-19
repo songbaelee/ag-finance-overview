@@ -187,15 +187,21 @@
     return node;
   }
 
-  // Scrolls to the leaf's box in the static tree below and gives it a
-  // brief border-color flash (see .cp-node--leaf.is-flash in style.css)
-  // so it's obvious which card the quiz just pointed at.
+  // Scrolls to the leaf's heading in the static tree below and gives its
+  // nested org card(s) a brief border-color flash (see .cp-archetype
+  // .is-flash in style.css) so it's obvious which card the quiz just
+  // pointed at. The leaf id sits on a plain <li> (the heading row plus
+  // its nested content), not on the card itself -- only the card has a
+  // visible box to flash.
   function jumpToMap(leafId) {
     var target = document.getElementById(leafId);
     if (!target) return;
     target.scrollIntoView({ behavior: "smooth", block: "center" });
-    target.classList.add("is-flash");
-    window.setTimeout(function () { target.classList.remove("is-flash"); }, 1600);
+    var cards = target.classList.contains("cp-archetype") ? [target] : target.querySelectorAll(".cp-archetype");
+    for (var i = 0; i < cards.length; i++) cards[i].classList.add("is-flash");
+    window.setTimeout(function () {
+      for (var i = 0; i < cards.length; i++) cards[i].classList.remove("is-flash");
+    }, 1600);
   }
 
   // Leaf cards are never retyped here -- each card is a live clone of

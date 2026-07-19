@@ -855,25 +855,17 @@ table.data-table {
   margin-left: 0.35rem;
 }
 
-.cp-node--leaf {
+/* Every heading in the tree -- branch or leaf -- uses the same plain-row
+   markup (.cp-node--branch); the org card is always a separate, nested
+   element, so it's the card itself that carries the bordered-box look
+   (formerly on a merged heading+card .cp-node--leaf, now removed). */
+.cp-archetype {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 0.7rem 1rem;
   margin: 0.35rem 0 0.6rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.cp-node__label {
-  font-weight: 600;
-  font-size: 0.92rem;
-  color: var(--text-primary);
-}
-
-.cp-archetype {
-  margin-top: 0.6rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--border);
 }
 
 .cp-archetype__org {
@@ -1078,23 +1070,11 @@ table.data-table {
   color: var(--text-primary);
 }
 
-.cp-quiz__landing-cards > .cp-archetype {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: none;
-}
-
-.cp-quiz__landing-cards > .cp-archetype + .cp-archetype {
-  margin-top: 0.9rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--border);
-}
-
 /* Transient highlight when a "jump to the map" action lands on a static
-   tree leaf -- no existing highlight/flash pattern on the site to reuse,
+   tree card -- no existing highlight/flash pattern on the site to reuse,
    so this is a new, simple border-color flash (transition lives on the
-   base .cp-node--leaf rule above so it fades both in and out). */
-.cp-node--leaf.is-flash {
+   base .cp-archetype rule above so it fades both in and out). */
+.cp-archetype.is-flash {
   border-color: var(--illustrative-accent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--illustrative-accent) 35%, transparent);
 }
