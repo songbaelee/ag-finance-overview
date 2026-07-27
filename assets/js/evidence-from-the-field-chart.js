@@ -19,6 +19,22 @@
     { key: "seg5", label: "$500k–$2M", margin: 6.5, loans: 306, value: 285e6 }
   ];
 
+  // Diagram 4: market-wide opportunity-cost reference points, same report.
+  var COUNTRIES = [
+    { name: "Kenya", bankProfit: 26, bondYield: 17 },
+    { name: "Rwanda", bankProfit: 22, bondYield: 12 },
+    { name: "Tanzania", bankProfit: 29, bondYield: 10 },
+    { name: "Uganda", bankProfit: 22, bondYield: 16 }
+  ];
+  var BANK_RANGE = {
+    min: Math.min.apply(null, COUNTRIES.map(function (c) { return c.bankProfit; })),
+    max: Math.max.apply(null, COUNTRIES.map(function (c) { return c.bankProfit; }))
+  };
+  var BOND_RANGE = {
+    min: Math.min.apply(null, COUNTRIES.map(function (c) { return c.bondYield; })),
+    max: Math.max.apply(null, COUNTRIES.map(function (c) { return c.bondYield; }))
+  };
+
   var state = {
     totalLending: 10000000,
     pct: { seg1: 20, seg2: 20, seg3: 20, seg4: 20, seg5: 20 }
@@ -77,6 +93,15 @@
   function fmtSignedMoney(v) {
     return (v < 0 ? "−" : "") + fmtMoney(Math.abs(v));
   }
+
+  // One-decimal $k/$M formatting for the small, precise "avg. loan size"
+  // figures (derived, not reported directly) -- fmtMoney's whole-K/M
+  // rounding is too coarse for these.
+  function fmtAvgSize(v) {
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(2) + "M";
+    return "$" + (v / 1000).toFixed(1) + "k";
+  }
+
 
   function fmtCount(v) {
     return Math.round(v).toLocaleString("en-US");
@@ -294,6 +319,15 @@
     container.appendChild(legend);
   }
 
+  // Avg. loan size is derived (value / loans), not a reported figure --
+  // compute it here rather than hardcoding it in the page, so it stays
+  // correct if the source figures above are ever revised.
+  function fillAvgLoanSizes() {
+    SEGMENTS.forEach(function (seg) {
+      setText("efdf-avg-" + seg.key, fmtAvgSize(seg.value / seg.loans));
+    });
+  }
+
   // ---------- portfolio allocator (user's own illustrative construction) ----------
 
   function computeAllocator() {
@@ -323,14 +357,15 @@
     totalLabel.setAttribute("for", "efdf-total-lending");
     totalLabel.textContent = "Total lending to allocate ($)";
     var totalInput = document.createElement("input");
-    totalInput.type = "number";
+    totalInput.type = "text";
+    totalInput.inputMode = "numeric";
     totalInput.id = "efdf-total-lending";
-    totalInput.min = "0";
-    totalInput.step = "100000";
-    totalInput.value = String(state.totalLending);
+    totalInput.value = fmtCount(state.totalLending);
     totalInput.addEventListener("input", function () {
-      var v = Number(totalInput.value);
-      state.totalLending = isNaN(v) || v < 0 ? 0 : v;
+      var digits = totalInput.value.replace(/[^0-9]/g, "");
+      var v = digits === "" ? 0 : Number(digits);
+      state.totalLending = v;
+      totalInput.value = digits === "" ? "" : fmtCount(v);
       updateAllocator();
     });
     totalRow.appendChild(totalLabel);
@@ -427,36 +462,60 @@
 
   function updateAllocator() {
     var c = computeAllocator();
+    var sumRounded = Math.round(c.sumPct);
+    // Any input rounding to exactly 100 counts as valid -- avoids a
+    // "sum to 100% — add 0% more" message from stray float noise while
+    // still catching every real, user-visible mismatch.
+    var isValid = sumRounded === 100;
 
     c.rows.forEach(function (r) {
       var dollarEl = document.getElementById("efdf-dollar-" + r.key);
-      if (dollarEl) dollarEl.textContent = fmtMoney(r.dollarAllocated);
+      if (dollarEl) dollarEl.textContent = isValid ? fmtMoney(r.dollarAllocated) : "—";
 
       var profitEl = document.getElementById("efdf-profit-" + r.key);
       if (profitEl) {
-        profitEl.textContent = fmtSignedMoney(r.dollarProfit);
-        profitEl.className = r.dollarProfit < 0 ? "efdf-loss" : "efdf-profit";
+        profitEl.textContent = isValid ? fmtSignedMoney(r.dollarProfit) : "—";
+        profitEl.className = isValid ? (r.dollarProfit < 0 ? "efdf-loss" : "efdf-profit") : "";
       }
     });
 
     var warnEl = document.getElementById("efdf-pct-warning");
     if (warnEl) {
-      var rounded = Math.round(c.sumPct * 10) / 10;
-      if (Math.abs(rounded - 100) < 0.05) {
+      if (isValid) {
         warnEl.textContent = "";
+      } else if (sumRounded < 100) {
+        warnEl.textContent =
+          "Percentages sum to " + sumRounded + "% — add " + (100 - sumRounded) + "% more";
       } else {
         warnEl.textContent =
-          "Percentages currently sum to " + rounded + "% — adjust so they total " +
-          "100% for the figures below to reflect the full amount entered above.";
+          "Percentages sum to " + sumRounded + "% — remove " + (sumRounded - 100) + "%";
       }
     }
 
-    setText("efdf-weighted-margin", fmtPct(c.weightedMargin));
-    setText("efdf-total-allocated", fmtMoney(c.totalAllocated));
+    setText("efdf-weighted-margin", isValid ? fmtPct(c.weightedMargin) : "—");
+    setText("efdf-total-allocated", isValid ? fmtMoney(c.totalAllocated) : "—");
     var profitStat = document.getElementById("efdf-total-profit");
     if (profitStat) {
-      profitStat.textContent = fmtSignedMoney(c.totalProfit);
-      profitStat.className = "stat-value " + (c.totalProfit < 0 ? "efdf-loss" : "efdf-profit");
+      profitStat.textContent = isValid ? fmtSignedMoney(c.totalProfit) : "—";
+      profitStat.className = "stat-value " + (isValid ? (c.totalProfit < 0 ? "efdf-loss" : "efdf-profit") : "");
+    }
+
+    var compareEl = document.getElementById("efdf-opportunity-compare");
+    if (compareEl) {
+      if (isValid) {
+        compareEl.textContent =
+          "Your portfolio margin vs. what this capital could otherwise earn: " +
+          fmtPct(c.weightedMargin) + ", against a " + BANK_RANGE.min + "–" + BANK_RANGE.max +
+          "% range for bank profitability elsewhere in the region (without agri-SME incentives) " +
+          "and a " + BOND_RANGE.min + "–" + BOND_RANGE.max + "% range for government bond " +
+          "yields. This isn't a claim about where the hypothetical portfolio above is located — " +
+          "just a sense of the opportunity cost of directing capital toward agri-SME lending " +
+          "instead of these alternatives.";
+      } else {
+        compareEl.textContent =
+          "Enter percentages that sum to 100% above to compare your portfolio margin against " +
+          "these alternatives.";
+      }
     }
   }
 
@@ -466,6 +525,7 @@
       chartMount.classList.add("chart-card");
       renderProfitabilityChart(chartMount);
     }
+    fillAvgLoanSizes();
 
     var allocatorRoot = document.getElementById("efdf-allocator-root");
     if (allocatorRoot) {

@@ -1185,11 +1185,12 @@ table.data-table {
   color: var(--text-secondary);
 }
 
-.efdf-total-row input[type="number"] {
+.efdf-total-row input[type="text"] {
   font-family: var(--font-sans);
   font-size: 0.95rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  text-align: right;
   color: var(--text-primary);
   background: var(--surface-1);
   border: 1px solid var(--border);
@@ -1211,7 +1212,7 @@ table.data-table {
   text-align: right;
 }
 
-.efdf-total-row input[type="number"]:focus-visible,
+.efdf-total-row input[type="text"]:focus-visible,
 .data-table input[type="number"]:focus-visible {
   outline: 2px solid var(--series-bank);
   outline-offset: 1px;

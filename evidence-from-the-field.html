@@ -64,6 +64,7 @@
             <th scope="col">Net profit/loss</th>
             <th scope="col">Total loans</th>
             <th scope="col">Total loan value</th>
+            <th scope="col">Avg. loan size</th>
           </tr>
         </thead>
         <tbody>
@@ -72,30 +73,35 @@
             <td>-1.0%</td>
             <td>11,229</td>
             <td>$177M</td>
+            <td id="efdf-avg-seg1"></td>
           </tr>
           <tr>
             <td>$25k–$49k</td>
             <td>4.1%</td>
             <td>3,572</td>
             <td>$120M</td>
+            <td id="efdf-avg-seg2"></td>
           </tr>
           <tr>
             <td>$50k–$199k</td>
             <td>5.6%</td>
             <td>2,887</td>
             <td>$280M</td>
+            <td id="efdf-avg-seg3"></td>
           </tr>
           <tr>
             <td>$200k–$499k</td>
             <td>6.5%</td>
             <td>737</td>
             <td>$220M</td>
+            <td id="efdf-avg-seg4"></td>
           </tr>
           <tr>
             <td>$500k–$2M</td>
             <td>6.5%</td>
             <td>306</td>
             <td>$285M</td>
+            <td id="efdf-avg-seg5"></td>
           </tr>
         </tbody>
       </table>
@@ -119,6 +125,68 @@
 
     <h3 class="chart-title">Portfolio profitability by loan size</h3>
     <div id="efdf-allocator-root"></div>
+  </section>
+
+  <section class="section-report">
+    <h2 class="section-heading">What the report also tells us: opportunity cost</h2>
+    <p class="page-intro">
+      Agri-SME lending doesn't happen in a vacuum — capital that goes into
+      it could otherwise fund other things. The report's Diagram 4 gives
+      two market-wide reference points for the same countries: what banks
+      earn on lending generally (without agri-SME incentives), and what a
+      government bond yields.
+    </p>
+
+    <p class="source-line">
+      Source: Dalberg Advisors / Aceli Africa, <em>&ldquo;Learning Report: Year
+      3 — Unlocking Finance for African Agriculture&rdquo;</em> (2024), Diagram 4.
+      <a href="https://aceliafrica.org/data-learning/aceli-africa-year-3-learning-report/" target="_blank" rel="noopener">
+        Read the full report
+      </a>
+    </p>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Country</th>
+            <th scope="col">Bank profitability (no agri-SME incentives)</th>
+            <th scope="col">Government bond yield</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Kenya</td>
+            <td>26%</td>
+            <td>17%</td>
+          </tr>
+          <tr>
+            <td>Rwanda</td>
+            <td>22%</td>
+            <td>12%</td>
+          </tr>
+          <tr>
+            <td>Tanzania</td>
+            <td>29%</td>
+            <td>10%</td>
+          </tr>
+          <tr>
+            <td>Uganda</td>
+            <td>22%</td>
+            <td>16%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stat-grid" style="margin-top:1.25rem;">
+      <div class="stat-card">
+        <span class="stat-value">3.2% → 6.5%</span>
+        <span class="stat-label">Regional avg. agri-SME lending profitability, without vs. with Aceli incentives</span>
+      </div>
+    </div>
+
+    <p id="efdf-opportunity-compare" class="callout-note" role="status"></p>
   </section>
 
   <!-- Placeholder: a second piece belongs on this page eventually -- a
