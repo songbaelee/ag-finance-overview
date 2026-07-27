@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence from the Field — Ag Finance Overview</title>
+<link rel="stylesheet" href="assets/css/style.css?v=11">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-title" href="index.html">Ag Finance Overview</a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="market-sizing.html">Market Sizing</a></li>
+        <li><a href="types-of-ag-finance.html">Closing the Gap</a></li>
+        <li><a href="capital-providers.html">The Landscape</a></li>
+        <li><a href="evidence-from-the-field.html" aria-current="page">Evidence from the Field</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Evidence from the Field</h1>
+  <p class="page-intro">
+    Most of this site relies on illustrative modeling — estimates and
+    segmentations built to show the shape of the market, always clearly
+    labeled as "our illustrative modeling." This page is the exception. It
+    presents actual figures reported by real lenders and programs, not
+    modeled ones.
+  </p>
+
+  <section class="section-report">
+    <h2 class="section-heading">What the report tells us</h2>
+    <p class="page-intro">
+      How profitable is agricultural lending, and does that change with loan
+      size? The figures below come from a market-wide benchmarking study of
+      East African bank profitability — not from any single lender's
+      portfolio, and not from Aceli Africa's own incentive-program data.
+      Most of the underlying loans predate or fall outside that program
+      entirely.
+    </p>
+
+    <p class="source-line">
+      Source: Dalberg Advisors / Aceli Africa, <em>&ldquo;Learning Report: Year
+      3 — Unlocking Finance for African Agriculture&rdquo;</em> (2024).
+      <a href="https://aceliafrica.org/data-learning/aceli-africa-year-3-learning-report/" target="_blank" rel="noopener">
+        Read the full report
+      </a>
+    </p>
+
+    <h3 class="chart-title">Net profit/loss by loan size (East African banks, 2019–2022)</h3>
+    <div id="efdf-profitability-chart"></div>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <caption>Underlying figures for the chart above.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Loan size segment</th>
+            <th scope="col">Net profit/loss</th>
+            <th scope="col">Total loans</th>
+            <th scope="col">Total loan value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>$10k–$24k</td>
+            <td>-1.0%</td>
+            <td>11,229</td>
+            <td>$177M</td>
+          </tr>
+          <tr>
+            <td>$25k–$49k</td>
+            <td>4.1%</td>
+            <td>3,572</td>
+            <td>$120M</td>
+          </tr>
+          <tr>
+            <td>$50k–$199k</td>
+            <td>5.6%</td>
+            <td>2,887</td>
+            <td>$280M</td>
+          </tr>
+          <tr>
+            <td>$200k–$499k</td>
+            <td>6.5%</td>
+            <td>737</td>
+            <td>$220M</td>
+          </tr>
+          <tr>
+            <td>$500k–$2M</td>
+            <td>6.5%</td>
+            <td>306</td>
+            <td>$285M</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-illustrative">
+    <h2 class="section-heading">
+      Our illustrative modeling
+      <span class="badge-illustrative">Illustrative</span>
+    </h2>
+    <p class="illustrative-note">
+      The profitability curve above is real, reported market data. What you
+      build below is not — it's a hypothetical portfolio you construct
+      yourself, not a market projection or a claim about how capital
+      actually gets allocated by loan size in practice. Enter a total
+      lending amount and split it across the five segments above (the
+      percentages should add up to 100%) to see the resulting weighted-average
+      profitability.
+    </p>
+
+    <h3 class="chart-title">Portfolio profitability by loan size</h3>
+    <div id="efdf-allocator-root"></div>
+  </section>
+
+  <!-- Placeholder: a second piece belongs on this page eventually -- a
+       static chart plus short framing text comparing Aceli Africa's
+       projected vs. actual loan volume (Year 5). Not built yet; separate,
+       later batch. -->
+
+</main>
+
+<footer class="site-footer">
+  <p>Ag Finance Overview is a resource for development staff without a finance background.</p>
+</footer>
+
+<script src="assets/js/evidence-from-the-field-chart.js"></script>
+</body>
+</html>

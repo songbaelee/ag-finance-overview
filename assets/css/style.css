@@ -1170,6 +1170,62 @@ table.data-table {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--illustrative-accent) 35%, transparent);
 }
 
+/* ---------- evidence from the field: portfolio allocator ---------- */
+
+.efdf-total-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 1.25rem;
+}
+
+.efdf-total-row label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.efdf-total-row input[type="number"] {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.5rem;
+  width: 9rem;
+}
+
+.data-table input[type="number"] {
+  font-family: var(--font-sans);
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.4rem;
+  width: 4rem;
+  text-align: right;
+}
+
+.efdf-total-row input[type="number"]:focus-visible,
+.data-table input[type="number"]:focus-visible {
+  outline: 2px solid var(--series-bank);
+  outline-offset: 1px;
+}
+
+.efdf-profit { color: var(--series-green); }
+.efdf-loss { color: var(--series-red); }
+
+.efdf-warn {
+  margin: -0.5rem 0 1.5rem;
+  font-size: 0.85rem;
+  color: var(--series-red);
+}
+
 /* ---------- footer ---------- */
 
 .site-footer {
