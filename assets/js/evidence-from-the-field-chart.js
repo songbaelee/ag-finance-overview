@@ -35,6 +35,18 @@
     max: Math.max.apply(null, COUNTRIES.map(function (c) { return c.bondYield; }))
   };
 
+  // Figure 3: Aceli's own portfolio (Y5 Learning Report), projected vs.
+  // actual loans by size -- unlike SEGMENTS/COUNTRIES above, this is
+  // Aceli-specific, not market-wide benchmarking. Static chart, not
+  // adjustable.
+  var VOLUME_SEGMENTS = [
+    { label: "$10k–$49k", projected: 0, actual: 3520 },
+    { label: "$50k–$99k", projected: 200, actual: 1074 },
+    { label: "$100k–$249k", projected: 300, actual: 616 },
+    { label: "$250k–$499k", projected: 700, actual: 237 },
+    { label: "$500k–$1.75M", projected: 300, actual: 129 }
+  ];
+
   var state = {
     totalLending: 10000000,
     pct: { seg1: 20, seg2: 20, seg3: 20, seg4: 20, seg5: 20 }
@@ -328,6 +340,191 @@
     });
   }
 
+  // ---------- static grouped bar chart (Figure 3: projected vs. actual) ----------
+
+  function renderVolumeChart(container) {
+    container.innerHTML = "";
+
+    var maxValue = VOLUME_SEGMENTS.reduce(function (m, s) {
+      return Math.max(m, s.projected, s.actual);
+    }, 0);
+    var DOMAIN_MAX = Math.ceil(maxValue / 500) * 500;
+    var TICK_STEP = DOMAIN_MAX / 4;
+    var TICKS = [0, TICK_STEP, TICK_STEP * 2, TICK_STEP * 3, DOMAIN_MAX];
+
+    var W = 640, H = 380;
+    var margin = { top: 30, right: 24, bottom: 62, left: 56 };
+    var plotW = W - margin.left - margin.right;
+    var plotH = H - margin.top - margin.bottom;
+    var plotTop = margin.top;
+    var plotBottom = margin.top + plotH;
+
+    function yFor(v) {
+      return plotBottom - (v / DOMAIN_MAX) * plotH;
+    }
+
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + W + " " + H,
+      role: "img",
+      "aria-label":
+        "Grouped bar chart of Aceli-supported loans, projected vs. actual, by loan " +
+        "size range: " +
+        VOLUME_SEGMENTS.map(function (s) {
+          return s.label + " -- projected " + fmtCount(s.projected) + ", actual " + fmtCount(s.actual);
+        }).join(", ") + "."
+    });
+
+    TICKS.forEach(function (t) {
+      var y = yFor(t);
+      svg.appendChild(svgEl("line", {
+        class: "chart-gridline",
+        x1: margin.left, x2: margin.left + plotW, y1: y, y2: y
+      }));
+      var label = svgEl("text", {
+        class: "chart-tick-label",
+        x: margin.left - 8, y: y, "text-anchor": "end", "dominant-baseline": "middle"
+      });
+      label.textContent = fmtCount(t);
+      svg.appendChild(label);
+    });
+
+    var plotMidY = plotTop + plotH / 2;
+    var leftAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: 14, y: plotMidY, "text-anchor": "middle",
+      transform: "rotate(-90 14 " + plotMidY + ")"
+    });
+    leftAxisTitle.textContent = "# of loans";
+    svg.appendChild(leftAxisTitle);
+
+    var xAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: margin.left + plotW / 2, y: plotBottom + 46, "text-anchor": "middle"
+    });
+    xAxisTitle.textContent = "Loan size range";
+    svg.appendChild(xAxisTitle);
+
+    svg.appendChild(svgEl("line", {
+      class: "chart-baseline",
+      x1: margin.left, x2: margin.left + plotW, y1: plotBottom, y2: plotBottom
+    }));
+
+    var slotW = plotW / VOLUME_SEGMENTS.length;
+    var barWidth = 20, barGap = 6;
+    var clusterWidth = barWidth * 2 + barGap;
+    var wrap = container;
+    var tip = buildTooltip(wrap);
+
+    VOLUME_SEGMENTS.forEach(function (seg, i) {
+      var slotCenter = margin.left + slotW * (i + 0.5);
+      var clusterX = slotCenter - clusterWidth / 2;
+      var projX = clusterX;
+      var actualX = clusterX + barWidth + barGap;
+
+      var g = svgEl("g", { class: "chart-bar" });
+
+      var bars = [
+        { x: projX, value: seg.projected, varName: "--series-bank" },
+        { x: actualX, value: seg.actual, varName: "--series-fund" }
+      ];
+      bars.forEach(function (b) {
+        var barY = yFor(b.value);
+        var path = svgEl("path", {
+          class: "chart-seg",
+          d: roundedTopPath(b.x, barWidth, barY, plotBottom, 3),
+          style: "fill:var(" + b.varName + ")"
+        });
+        g.appendChild(path);
+
+        var valueLabel = svgEl("text", {
+          class: "chart-value-label",
+          x: b.x + barWidth / 2, y: barY - 6, "text-anchor": "middle"
+        });
+        valueLabel.textContent = fmtCount(b.value);
+        g.appendChild(valueLabel);
+      });
+
+      var catLabel = svgEl("text", {
+        class: "chart-category-label",
+        x: slotCenter, y: plotBottom + 20, "text-anchor": "middle"
+      });
+      catLabel.textContent = seg.label;
+      g.appendChild(catLabel);
+
+      var hit = svgEl("rect", {
+        class: "chart-bar-hit",
+        x: slotCenter - slotW / 2 + 2, y: plotTop, width: slotW - 4, height: plotH,
+        tabindex: "0", role: "button",
+        "aria-label": seg.label + ": projected " + fmtCount(seg.projected) +
+          " loans, actual " + fmtCount(seg.actual) + " loans"
+      });
+
+      function show(evt) {
+        g.classList.add("is-active");
+        tip.textContent = "";
+        var title = document.createElement("div");
+        title.className = "tt-title";
+        title.textContent = seg.label;
+        tip.appendChild(title);
+        [["Projected", fmtCount(seg.projected)], ["Actual", fmtCount(seg.actual)]].forEach(function (r) {
+          var row = document.createElement("div");
+          row.className = "tt-row";
+          var label = document.createElement("span");
+          label.textContent = r[0];
+          row.appendChild(label);
+          var val = document.createElement("strong");
+          val.textContent = r[1];
+          row.appendChild(val);
+          tip.appendChild(row);
+        });
+        tip.classList.add("is-visible");
+        if (evt && evt.clientX !== undefined) positionTooltip(tip, wrap, evt);
+      }
+      function hide() {
+        g.classList.remove("is-active");
+        tip.classList.remove("is-visible");
+      }
+      hit.addEventListener("pointerenter", show);
+      hit.addEventListener("pointermove", show);
+      hit.addEventListener("pointerleave", hide);
+      hit.addEventListener("focus", function () {
+        show({});
+        var r = hit.getBoundingClientRect();
+        var wrapRect = wrap.getBoundingClientRect();
+        tip.style.left = r.left + r.width / 2 - wrapRect.left + "px";
+        tip.style.top = r.top - wrapRect.top + "px";
+      });
+      hit.addEventListener("blur", hide);
+
+      g.appendChild(hit);
+      svg.appendChild(g);
+    });
+
+    var svgWrap = document.createElement("div");
+    svgWrap.className = "chart-svg-wrap";
+    svgWrap.appendChild(svg);
+    container.appendChild(svgWrap);
+
+    var legend = document.createElement("div");
+    legend.className = "chart-legend";
+    [
+      { label: "Projected", varName: "--series-bank" },
+      { label: "Actual", varName: "--series-fund" }
+    ].forEach(function (d) {
+      var item = document.createElement("span");
+      item.className = "chart-legend__item";
+      var swatch = document.createElement("span");
+      swatch.className = "chart-legend__swatch";
+      swatch.style.background = "var(" + d.varName + ")";
+      item.appendChild(swatch);
+      var label = document.createElement("span");
+      label.textContent = d.label;
+      item.appendChild(label);
+      legend.appendChild(item);
+    });
+    container.appendChild(legend);
+  }
+
   // ---------- portfolio allocator (user's own illustrative construction) ----------
 
   function computeAllocator() {
@@ -531,6 +728,12 @@
     if (allocatorRoot) {
       buildAllocator(allocatorRoot);
       updateAllocator();
+    }
+
+    var volumeMount = document.getElementById("efdf-volume-chart");
+    if (volumeMount) {
+      volumeMount.classList.add("chart-card");
+      renderVolumeChart(volumeMount);
     }
   });
 })();
