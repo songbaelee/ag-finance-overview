@@ -338,6 +338,9 @@
     SEGMENTS.forEach(function (seg) {
       setText("efdf-avg-" + seg.key, fmtAvgSize(seg.value / seg.loans));
     });
+    var totalLoans = SEGMENTS.reduce(function (sum, seg) { return sum + seg.loans; }, 0);
+    var totalValue = SEGMENTS.reduce(function (sum, seg) { return sum + seg.value; }, 0);
+    setText("efdf-avg-total", fmtAvgSize(totalValue / totalLoans));
   }
 
   // ---------- static grouped bar chart (Figure 3: projected vs. actual) ----------
