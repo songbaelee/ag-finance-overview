@@ -37,11 +37,11 @@
     <h2 class="section-heading">What the report tells us</h2>
     <p class="page-intro">
       How profitable is agricultural lending, and does that change with loan
-      size? The figures below come from a market-wide benchmarking study of
-      East African bank profitability — not from any single lender's
-      portfolio, and not from Aceli Africa's own incentive-program data.
-      Most of the underlying loans predate or fall outside that program
-      entirely.
+      size? The figures below come from Diagram 5 of a market-wide
+      benchmarking study of East African bank profitability — not from any
+      single lender's portfolio, and not from Aceli Africa's own
+      incentive-program data. Most of the underlying loans predate or fall
+      outside that program entirely.
     </p>
 
     <p class="source-line">
@@ -158,13 +158,7 @@
       government bond yields.
     </p>
 
-    <p class="source-line">
-      Source: Dalberg Advisors / Aceli Africa, <em>&ldquo;Learning Report: Year
-      3 — Unlocking Finance for African Agriculture&rdquo;</em> (2024), Diagram 4.
-      <a href="https://aceliafrica.org/data-learning/aceli-africa-year-3-learning-report/" target="_blank" rel="noopener">
-        Read the full report
-      </a>
-    </p>
+    <p class="source-line">Same report, Diagram 4.</p>
 
     <div class="data-table-wrap">
       <table class="data-table">
@@ -215,9 +209,10 @@
     <p class="page-intro">
       Aceli's pre-launch plan assumed international impact investors would
       supply roughly half of loan volume, with a small number of
-      African-domiciled lenders (target: 10) making up the rest. In
-      practice, 45 African-domiciled lenders drove 96% of the 5,576 loans
-      made — local banks had branch networks reaching smaller, more remote
+      African-domiciled lenders (target: 10) making up the rest. As the
+      report's Figure 3 shows, in practice 45 African-domiciled lenders
+      drove 96% of the 5,576 loans made — local banks had branch networks
+      reaching smaller, more remote
       agri-SMEs in a way international funds, which typically serve
       several countries from a single regional office and favor larger
       loan sizes for their own operating economics, could not. Aceli also
@@ -233,7 +228,7 @@
 
     <p class="source-line">
       Source: Aceli Africa, <em>&ldquo;Activating the Agri-SME Finance Market:
-      Learning from 2020&ndash;2025&rdquo;</em> (Y5 Learning Report, 2026).
+      Learning from 2020&ndash;2025&rdquo;</em> (Y5 Learning Report, 2026), Figures 3&ndash;4.
       <a href="https://aceliafrica.org/data-learning/activating-the-agri-sme-finance-market-learning-from-2020-2025/" target="_blank" rel="noopener">
         Read the full report
       </a>
@@ -249,43 +244,68 @@
           <tr>
             <th scope="col">Loan size range</th>
             <th scope="col">Projected (# of loans)</th>
+            <th scope="col">% of projected</th>
             <th scope="col">Actual (# of loans)</th>
+            <th scope="col">% of actual</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>$10k–$49k</td>
             <td>0</td>
+            <td id="efdf-pctproj-vol1"></td>
             <td>3,520</td>
+            <td id="efdf-pctactual-vol1"></td>
           </tr>
           <tr>
             <td>$50k–$99k</td>
             <td>200</td>
+            <td id="efdf-pctproj-vol2"></td>
             <td>1,074</td>
+            <td id="efdf-pctactual-vol2"></td>
           </tr>
           <tr>
             <td>$100k–$249k</td>
             <td>300</td>
+            <td id="efdf-pctproj-vol3"></td>
             <td>616</td>
+            <td id="efdf-pctactual-vol3"></td>
           </tr>
           <tr>
             <td>$250k–$499k</td>
             <td>700</td>
+            <td id="efdf-pctproj-vol4"></td>
             <td>237</td>
+            <td id="efdf-pctactual-vol4"></td>
           </tr>
           <tr>
             <td>$500k–$1.75M</td>
             <td>300</td>
+            <td id="efdf-pctproj-vol5"></td>
             <td>129</td>
+            <td id="efdf-pctactual-vol5"></td>
           </tr>
           <tr class="total-row">
             <td>Total</td>
             <td>1,500</td>
+            <td>100%</td>
             <td>5,576</td>
+            <td>100%</td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <p class="page-intro">
+      The smaller a loan segment, the more of its borrowers are new to
+      lending — and, as Figure 4 below shows, the more heavily Aceli
+      subsidizes it (a lower leverage ratio). That pairing isn't a
+      coincidence: it's the same deliberate tradeoff described above —
+      lower capital leverage where additionality is highest.
+    </p>
+
+    <h3 class="chart-title">Percentage of loans to new borrowers and capital leverage ratio by loan size (Figure 4)</h3>
+    <div id="efdf-newborrower-chart"></div>
   </section>
 
 </main>

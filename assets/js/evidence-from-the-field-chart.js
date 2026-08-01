@@ -40,11 +40,22 @@
   // Aceli-specific, not market-wide benchmarking. Static chart, not
   // adjustable.
   var VOLUME_SEGMENTS = [
-    { label: "$10k–$49k", projected: 0, actual: 3520 },
-    { label: "$50k–$99k", projected: 200, actual: 1074 },
-    { label: "$100k–$249k", projected: 300, actual: 616 },
-    { label: "$250k–$499k", projected: 700, actual: 237 },
-    { label: "$500k–$1.75M", projected: 300, actual: 129 }
+    { key: "vol1", label: "$10k–$49k", projected: 0, actual: 3520 },
+    { key: "vol2", label: "$50k–$99k", projected: 200, actual: 1074 },
+    { key: "vol3", label: "$100k–$249k", projected: 300, actual: 616 },
+    { key: "vol4", label: "$250k–$499k", projected: 700, actual: 237 },
+    { key: "vol5", label: "$500k–$1.75M", projected: 300, actual: 129 }
+  ];
+
+  // Figure 4: same Y5 report, same Aceli portfolio -- share of loans going
+  // to first-time borrowers vs. Aceli's capital leverage ratio, by the same
+  // loan-size ranges as Figure 3. Static chart, not adjustable.
+  var NEW_BORROWER_SEGMENTS = [
+    { label: "$10k–$49k", newBorrowerPct: 84, leverage: 5 },
+    { label: "$50k–$99k", newBorrowerPct: 35, leverage: 7 },
+    { label: "$100k–$249k", newBorrowerPct: 26, leverage: 10 },
+    { label: "$250k–$499k", newBorrowerPct: 16, leverage: 19 },
+    { label: "$500k–$1.75M", newBorrowerPct: 8, leverage: 29 }
   ];
 
   // Default allocation seeds the tool with the reported market distribution
@@ -125,6 +136,10 @@
 
   function fmtWholePct(v) {
     return Math.round(v) + "%";
+  }
+
+  function fmtLeverage(v) {
+    return v + "x";
   }
 
   function setText(id, text) {
@@ -353,6 +368,18 @@
     setText("efdf-avg-total", fmtAvgSize(totalValue / totalLoans));
   }
 
+  // % of projected / % of actual are derived (share of each column's
+  // total), not reported directly -- computed here so they stay correct
+  // if the source figures above are ever revised.
+  function fillVolumePercentages() {
+    var totalProjected = VOLUME_SEGMENTS.reduce(function (sum, seg) { return sum + seg.projected; }, 0);
+    var totalActual = VOLUME_SEGMENTS.reduce(function (sum, seg) { return sum + seg.actual; }, 0);
+    VOLUME_SEGMENTS.forEach(function (seg) {
+      setText("efdf-pctproj-" + seg.key, fmtWholePct((seg.projected / totalProjected) * 100));
+      setText("efdf-pctactual-" + seg.key, fmtWholePct((seg.actual / totalActual) * 100));
+    });
+  }
+
   // ---------- static grouped bar chart (Figure 3: projected vs. actual) ----------
 
   function renderVolumeChart(container) {
@@ -535,6 +562,245 @@
       item.appendChild(label);
       legend.appendChild(item);
     });
+    container.appendChild(legend);
+  }
+
+  // ---------- static bar+line chart (Figure 4: new-borrower share & leverage) ----------
+
+  function renderNewBorrowerLeverageChart(container) {
+    container.innerHTML = "";
+
+    var LEFT_DOMAIN_MAX = 100;
+    var LEFT_TICKS = [0, 25, 50, 75, 100];
+    var RIGHT_DOMAIN_MAX = 30;
+    var RIGHT_TICKS = [0, 10, 20, 30];
+
+    var W = 640, H = 380;
+    var margin = { top: 30, right: 70, bottom: 62, left: 56 };
+    var plotW = W - margin.left - margin.right;
+    var plotH = H - margin.top - margin.bottom;
+    var plotTop = margin.top;
+    var plotBottom = margin.top + plotH;
+
+    function yLeft(v) {
+      return plotBottom - (v / LEFT_DOMAIN_MAX) * plotH;
+    }
+    function yRight(v) {
+      return plotBottom - (v / RIGHT_DOMAIN_MAX) * plotH;
+    }
+
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + W + " " + H,
+      role: "img",
+      "aria-label":
+        "Bar chart of the percentage of loans going to new borrowers by loan size " +
+        "range, with a line showing Aceli's capital leverage ratio on a secondary " +
+        "axis: " +
+        NEW_BORROWER_SEGMENTS.map(function (s) {
+          return s.label + " -- " + s.newBorrowerPct + "% new borrowers, " + fmtLeverage(s.leverage) + " leverage";
+        }).join(", ") + "."
+    });
+
+    LEFT_TICKS.forEach(function (t) {
+      var y = yLeft(t);
+      svg.appendChild(svgEl("line", {
+        class: "chart-gridline",
+        x1: margin.left, x2: margin.left + plotW, y1: y, y2: y
+      }));
+      var label = svgEl("text", {
+        class: "chart-tick-label",
+        x: margin.left - 8, y: y, "text-anchor": "end", "dominant-baseline": "middle"
+      });
+      label.textContent = t + "%";
+      svg.appendChild(label);
+    });
+
+    RIGHT_TICKS.forEach(function (t) {
+      var y = yRight(t);
+      var label = svgEl("text", {
+        class: "chart-tick-label",
+        x: margin.left + plotW + 8, y: y, "text-anchor": "start", "dominant-baseline": "middle"
+      });
+      label.textContent = fmtLeverage(t);
+      svg.appendChild(label);
+    });
+
+    var plotMidY = plotTop + plotH / 2;
+    var leftAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: 14, y: plotMidY, "text-anchor": "middle",
+      transform: "rotate(-90 14 " + plotMidY + ")"
+    });
+    leftAxisTitle.textContent = "% of loans to new borrowers";
+    svg.appendChild(leftAxisTitle);
+
+    var rightAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: W - 14, y: plotMidY, "text-anchor": "middle",
+      transform: "rotate(90 " + (W - 14) + " " + plotMidY + ")"
+    });
+    rightAxisTitle.textContent = "Leverage ratio";
+    svg.appendChild(rightAxisTitle);
+
+    var xAxisTitle = svgEl("text", {
+      class: "chart-axis-label",
+      x: margin.left + plotW / 2, y: plotBottom + 46, "text-anchor": "middle"
+    });
+    xAxisTitle.textContent = "Loan size range";
+    svg.appendChild(xAxisTitle);
+
+    svg.appendChild(svgEl("line", {
+      class: "chart-baseline",
+      x1: margin.left, x2: margin.left + plotW, y1: plotBottom, y2: plotBottom
+    }));
+
+    var slotW = plotW / NEW_BORROWER_SEGMENTS.length;
+    var barWidth = 42;
+    var wrap = container;
+    var tip = buildTooltip(wrap);
+    var linePoints = [];
+
+    NEW_BORROWER_SEGMENTS.forEach(function (seg, i) {
+      var slotCenter = margin.left + slotW * (i + 0.5);
+      var barX = slotCenter - barWidth / 2;
+      var barY = yLeft(seg.newBorrowerPct);
+
+      var g = svgEl("g", { class: "chart-bar" });
+
+      var path = svgEl("path", {
+        class: "chart-seg",
+        d: roundedTopPath(barX, barWidth, barY, plotBottom, 4),
+        style: "fill:var(--series-orange)"
+      });
+      g.appendChild(path);
+
+      var valueLabel = svgEl("text", {
+        class: "chart-value-label",
+        x: slotCenter, y: barY - 8, "text-anchor": "middle"
+      });
+      valueLabel.textContent = seg.newBorrowerPct + "%";
+      g.appendChild(valueLabel);
+
+      var catLabel = svgEl("text", {
+        class: "chart-category-label",
+        x: slotCenter, y: plotBottom + 20, "text-anchor": "middle"
+      });
+      catLabel.textContent = seg.label;
+      g.appendChild(catLabel);
+
+      linePoints.push({ x: slotCenter, y: yRight(seg.leverage), seg: seg });
+
+      var hit = svgEl("rect", {
+        class: "chart-bar-hit",
+        x: slotCenter - slotW / 2 + 2, y: plotTop, width: slotW - 4, height: plotH,
+        tabindex: "0", role: "button",
+        "aria-label": seg.label + ": " + seg.newBorrowerPct + "% of loans to new " +
+          "borrowers, " + fmtLeverage(seg.leverage) + " capital leverage ratio"
+      });
+
+      function show(evt) {
+        g.classList.add("is-active");
+        tip.textContent = "";
+        var title = document.createElement("div");
+        title.className = "tt-title";
+        title.textContent = seg.label;
+        tip.appendChild(title);
+        [
+          ["% loans to new borrowers", seg.newBorrowerPct + "%"],
+          ["Leverage ratio", fmtLeverage(seg.leverage)]
+        ].forEach(function (r) {
+          var row = document.createElement("div");
+          row.className = "tt-row";
+          var label = document.createElement("span");
+          label.textContent = r[0];
+          row.appendChild(label);
+          var val = document.createElement("strong");
+          val.textContent = r[1];
+          row.appendChild(val);
+          tip.appendChild(row);
+        });
+        tip.classList.add("is-visible");
+        if (evt && evt.clientX !== undefined) positionTooltip(tip, wrap, evt);
+      }
+      function hide() {
+        g.classList.remove("is-active");
+        tip.classList.remove("is-visible");
+      }
+      hit.addEventListener("pointerenter", show);
+      hit.addEventListener("pointermove", show);
+      hit.addEventListener("pointerleave", hide);
+      hit.addEventListener("focus", function () {
+        show({});
+        var r = hit.getBoundingClientRect();
+        var wrapRect = wrap.getBoundingClientRect();
+        tip.style.left = r.left + r.width / 2 - wrapRect.left + "px";
+        tip.style.top = r.top - wrapRect.top + "px";
+      });
+      hit.addEventListener("blur", hide);
+
+      g.appendChild(hit);
+      svg.appendChild(g);
+    });
+
+    // leverage-ratio line + end-dots on the secondary axis, drawn above the bars
+    var polyline = svgEl("polyline", {
+      points: linePoints.map(function (p) { return p.x + "," + p.y; }).join(" "),
+      fill: "none",
+      style: "stroke:var(--series-count)",
+      "stroke-width": "2",
+      "stroke-linejoin": "round",
+      "stroke-linecap": "round"
+    });
+    svg.appendChild(polyline);
+
+    linePoints.forEach(function (p) {
+      svg.appendChild(svgEl("circle", {
+        cx: p.x, cy: p.y, r: 5,
+        style: "fill:var(--series-count);stroke:var(--surface-1)",
+        "stroke-width": "2"
+      }));
+      var above = p.y - plotTop > 24;
+      // Halo (stroke behind fill) keeps the label legible when a dot sits
+      // low on the right axis, over a tall bar's fill -- the same problem
+      // the dot itself solves with its --surface-1 stroke ring.
+      var lineLabel = svgEl("text", {
+        class: "chart-tick-label",
+        x: p.x, y: above ? p.y - 12 : p.y + 18, "text-anchor": "middle",
+        style: "paint-order:stroke;stroke:var(--surface-1);stroke-width:3px;stroke-linejoin:round"
+      });
+      lineLabel.textContent = fmtLeverage(p.seg.leverage);
+      svg.appendChild(lineLabel);
+    });
+
+    var svgWrap = document.createElement("div");
+    svgWrap.className = "chart-svg-wrap";
+    svgWrap.appendChild(svg);
+    container.appendChild(svgWrap);
+
+    var legend = document.createElement("div");
+    legend.className = "chart-legend";
+    var barItem = document.createElement("span");
+    barItem.className = "chart-legend__item";
+    var barSwatch = document.createElement("span");
+    barSwatch.className = "chart-legend__swatch";
+    barSwatch.style.background = "var(--series-orange)";
+    barItem.appendChild(barSwatch);
+    var barLabel = document.createElement("span");
+    barLabel.textContent = "% loans to new borrowers (left axis)";
+    barItem.appendChild(barLabel);
+    legend.appendChild(barItem);
+
+    var lineItem = document.createElement("span");
+    lineItem.className = "chart-legend__item";
+    var lineSwatch = document.createElement("span");
+    lineSwatch.className = "chart-legend__swatch chart-legend__swatch--line";
+    lineSwatch.style.background = "var(--series-count)";
+    lineItem.appendChild(lineSwatch);
+    var lineLegendLabel = document.createElement("span");
+    lineLegendLabel.textContent = "Leverage ratio (right axis)";
+    lineItem.appendChild(lineLegendLabel);
+    legend.appendChild(lineItem);
+
     container.appendChild(legend);
   }
 
@@ -747,6 +1013,13 @@
     if (volumeMount) {
       volumeMount.classList.add("chart-card");
       renderVolumeChart(volumeMount);
+    }
+    fillVolumePercentages();
+
+    var newBorrowerMount = document.getElementById("efdf-newborrower-chart");
+    if (newBorrowerMount) {
+      newBorrowerMount.classList.add("chart-card");
+      renderNewBorrowerLeverageChart(newBorrowerMount);
     }
   });
 })();
