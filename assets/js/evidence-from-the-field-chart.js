@@ -47,9 +47,13 @@
     { label: "$500k–$1.75M", projected: 300, actual: 129 }
   ];
 
+  // Default allocation seeds the tool with the reported market distribution
+  // of loan value (not loan count) by segment -- see SEGMENTS above. Kept
+  // to 2 decimals so the defaults sum to exactly 100.00%, not the 99% a
+  // whole-number rounding of these same shares would give.
   var state = {
     totalLending: 10000000,
-    pct: { seg1: 20, seg2: 20, seg3: 20, seg4: 20, seg5: 20 }
+    pct: { seg1: 16.36, seg2: 11.09, seg3: 25.88, seg4: 20.33, seg5: 26.34 }
   };
 
   function svgEl(tag, attrs) {
@@ -117,6 +121,10 @@
 
   function fmtCount(v) {
     return Math.round(v).toLocaleString("en-US");
+  }
+
+  function fmtWholePct(v) {
+    return Math.round(v) + "%";
   }
 
   function setText(id, text) {
@@ -335,11 +343,13 @@
   // compute it here rather than hardcoding it in the page, so it stays
   // correct if the source figures above are ever revised.
   function fillAvgLoanSizes() {
-    SEGMENTS.forEach(function (seg) {
-      setText("efdf-avg-" + seg.key, fmtAvgSize(seg.value / seg.loans));
-    });
     var totalLoans = SEGMENTS.reduce(function (sum, seg) { return sum + seg.loans; }, 0);
     var totalValue = SEGMENTS.reduce(function (sum, seg) { return sum + seg.value; }, 0);
+    SEGMENTS.forEach(function (seg) {
+      setText("efdf-avg-" + seg.key, fmtAvgSize(seg.value / seg.loans));
+      setText("efdf-pctloans-" + seg.key, fmtWholePct((seg.loans / totalLoans) * 100));
+      setText("efdf-pctvalue-" + seg.key, fmtWholePct((seg.value / totalValue) * 100));
+    });
     setText("efdf-avg-total", fmtAvgSize(totalValue / totalLoans));
   }
 
@@ -606,7 +616,7 @@
       pctInput.type = "number";
       pctInput.min = "0";
       pctInput.max = "100";
-      pctInput.step = "1";
+      pctInput.step = "0.01";
       pctInput.value = String(state.pct[seg.key]);
       pctInput.setAttribute("aria-label", seg.label + " percent of portfolio");
       pctInput.addEventListener("input", function () {

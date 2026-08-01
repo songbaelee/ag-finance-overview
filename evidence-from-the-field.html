@@ -63,7 +63,9 @@
             <th scope="col">Loan size segment</th>
             <th scope="col">Net profit/loss</th>
             <th scope="col">Total loans</th>
+            <th scope="col">% of loans</th>
             <th scope="col">Total loan value</th>
+            <th scope="col">% of value</th>
             <th scope="col">Avg. loan size</th>
           </tr>
         </thead>
@@ -72,42 +74,54 @@
             <td>$10k–$24k</td>
             <td>-1.0%</td>
             <td>11,229</td>
+            <td id="efdf-pctloans-seg1"></td>
             <td>$177M</td>
+            <td id="efdf-pctvalue-seg1"></td>
             <td id="efdf-avg-seg1"></td>
           </tr>
           <tr>
             <td>$25k–$49k</td>
             <td>4.1%</td>
             <td>3,572</td>
+            <td id="efdf-pctloans-seg2"></td>
             <td>$120M</td>
+            <td id="efdf-pctvalue-seg2"></td>
             <td id="efdf-avg-seg2"></td>
           </tr>
           <tr>
             <td>$50k–$199k</td>
             <td>5.6%</td>
             <td>2,887</td>
+            <td id="efdf-pctloans-seg3"></td>
             <td>$280M</td>
+            <td id="efdf-pctvalue-seg3"></td>
             <td id="efdf-avg-seg3"></td>
           </tr>
           <tr>
             <td>$200k–$499k</td>
             <td>6.5%</td>
             <td>737</td>
+            <td id="efdf-pctloans-seg4"></td>
             <td>$220M</td>
+            <td id="efdf-pctvalue-seg4"></td>
             <td id="efdf-avg-seg4"></td>
           </tr>
           <tr>
             <td>$500k–$2M</td>
             <td>6.5%</td>
             <td>306</td>
+            <td id="efdf-pctloans-seg5"></td>
             <td>$285M</td>
+            <td id="efdf-pctvalue-seg5"></td>
             <td id="efdf-avg-seg5"></td>
           </tr>
           <tr class="total-row">
             <td>Total</td>
             <td></td>
             <td>18,731</td>
+            <td>100%</td>
             <td>$1,082M</td>
+            <td>100%</td>
             <td id="efdf-avg-total"></td>
           </tr>
         </tbody>
@@ -121,12 +135,12 @@
       <span class="badge-illustrative">Illustrative</span>
     </h2>
     <p class="illustrative-note">
-      The profitability curve above is real, reported market data. What you
-      build below is not — it's a hypothetical portfolio you construct
-      yourself, not a market projection or a claim about how capital
-      actually gets allocated by loan size in practice. Enter a total
-      lending amount and split it across the five segments above (the
-      percentages should add up to 100%) to see the resulting weighted-average
+      The profitability curve above is real, reported market data. The
+      starting allocation below reflects the reported market distribution
+      of loan value by segment — but what you build from there is your own
+      hypothetical, not a market projection. Enter a total lending amount
+      and adjust the split across the five segments above (the percentages
+      should add up to 100%) to see the resulting weighted-average
       profitability.
     </p>
 
